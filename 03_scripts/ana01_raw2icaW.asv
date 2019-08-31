@@ -141,30 +141,30 @@ for sub = 1:length(SUBJ)
     run_ICA = 1;
     
     if run_ICA 
-        % making dummy epochs for ICA
-        EEG = eeg_regepochs(EEG,'recurrence',1);
-
-        N_EPOCHS_BEFORE = size(EEG.data,3);
-
-        % pruning
-        EEG = pop_jointprob(EEG,1, 1:EEG.nbchan ,cfg.ICA.PRUNE,cfg.ICA.PRUNE,0,0);
-        EEG = pop_rejkurt(EEG,1, 1:EEG.nbchan ,cfg.ICA.PRUNE,cfg.ICA.PRUNE,0,0);
-
-        N_EPOCHS_AFTER = size(EEG.data,3);
-
-       %% ICA    
-        EEG = pop_runica(EEG, 'icatype', 'runica', 'extended',1,'pca',EEG.nbchan);
-
-        % saving variables
-        cfg.ICA.out(sub).ID = SUBJ{sub};
-        cfg.ICA.out(sub).N_EPOCHS_BEFORE = N_EPOCHS_BEFORE;
-        cfg.ICA.out(sub).N_EPOCHS_AFTER = N_EPOCHS_AFTER;
-
-
-        EEG.setname = [SUBJ{sub},'_ICAw'];
-        EEG = pop_saveset(EEG, 'filename',[SUBJ{sub},'_ICAw','.set'],'filepath',PATHOUT);
-    end %if run ICA
     
+    
+    % making dummy epochs for ICA
+    EEG = eeg_regepochs(EEG,'recurrence',1);
+    
+    N_EPOCHS_BEFORE = size(EEG.data,3);
+    
+    % pruning
+    EEG = pop_jointprob(EEG,1, 1:EEG.nbchan ,cfg.ICA.PRUNE,cfg.ICA.PRUNE,0,0);
+    EEG = pop_rejkurt(EEG,1, 1:EEG.nbchan ,cfg.ICA.PRUNE,cfg.ICA.PRUNE,0,0);
+
+    N_EPOCHS_AFTER = size(EEG.data,3);
+    
+   %% ICA    
+    EEG = pop_runica(EEG, 'icatype', 'runica', 'extended',1,'pca',EEG.nbchan);
+
+    % saving variables
+    cfg.ICA.N_EPOCHS_BEFORE(sub) = N_EPOCHS_BEFORE;
+    cfg.ICA.N_EPOCHS_AFTER(sub) = N_EPOCHS_AFTER;
+
+    
+    EEG.setname = [SUBJ{sub},'_ICAw'];
+    EEG = pop_saveset(EEG, 'filename',[SUBJ{sub},'_ICAw','.set'],'filepath',PATHOUT);
+    end %if run ICA
     end %if subj ICAw
     catch % write in Error doc
         disp(['Error with ' SUBJ{sub}])
@@ -184,8 +184,5 @@ for sub = 1:length(SUBJ)
     clear EEG.EndRejTrig;
     
 end
-
 save([PATHOUT 'docError'], 'docError');
-save([PATHOUT 'cfg'], 'cfg');
-
 
