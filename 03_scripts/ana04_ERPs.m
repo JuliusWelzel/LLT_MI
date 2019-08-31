@@ -37,6 +37,7 @@ end
 list = dir(fullfile([PATHIN_ERP '*ep_filt.set']));
 SUBJ = str2double(extractBetween({list.name},'SUBJ','_'));
 
+%%
 for sub = SUBJ(old|young)
         EEG = pop_loadset('filename',['SUBJ' num2str(sub) '_ep_filt.set'],'filepath',PATHIN_ERP);
         ERP(sub).ID = EEG.ID;

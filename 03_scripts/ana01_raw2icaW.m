@@ -41,12 +41,12 @@ for sub = 1:length(SUBJ)
     try % write in doc_error when failing
     
     %% check if dataset already exists
-    if exist([SUBJ{sub} '_ICAw.set'],'file') == 9
+    if exist([SUBJ{sub} '_ICAw.set'],'file') == 2
         disp(['ICA for ' SUBJ{sub} ' has already been cleaned. Continue with next dataset.']);
     else 
 
 %% load xdf files
-    EEG = pop_loadxdf([PATHIN 'LLT_' SUBJ{sub} '.xdf'], 'streamtype', 'EEG', 'exclude_markerstreams', {});
+    EEG = pop_loadxdf([PATHIN 'LLT_' SUBJ{sub} '.xdf'], 'streamtype', 'EEG');
     EEG = eeg_checkset(EEG, 'eventconsistency' );
 
     %add chanlocs
