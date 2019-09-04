@@ -4,7 +4,7 @@
 global MAIN
 PATHIN_eeg = [MAIN '02_data\02_cleanEEG\'];
 
-PATHOUT_ERP = [MAIN '02_data\04_ERPs\'];
+PATHOUT_ERP = [MAIN '02_data\04_ERPs_ICA\'];
 PATHOUT_ERPplot = [PATHOUT_ERP 'ERP_plots\'];
 
 
