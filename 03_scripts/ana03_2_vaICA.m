@@ -4,7 +4,7 @@
 global MAIN
 PATHIN_eeg = [MAIN '02_data\02_cleanEEG\'];
 
-PATHOUT_ERP = [MAIN '02_data\04_ERPs_ICA\'];
+PATHOUT_ERP = [MAIN '02_data\04_ERPs\'];
 PATHOUT_ERPplot = [PATHOUT_ERP 'ERP_plots\'];
 
 
@@ -20,6 +20,8 @@ cfg.ERP.LP = 20;
 cfg.ERP.HP = 0.1;
 cfg.ERP.PRUNE = 3;
 cfg.ERP.resam = 500;
+cfg.ERP.ep_time = [-0.2 1.4];
+cfg.ERP.BL = [-200 0];
 
 iclab_nms = {'Brain','mdrt','cnsvtv'};
 
@@ -62,8 +64,8 @@ for ii = 2:size(iclab_nms,2)
     e_type = {EEG.event.type};
     e_idx = contains({EEG.event.type},'E_');
     ep_e = e_type(e_idx);
-    EEG = pop_epoch( EEG,ep_e, [-0.2  1.4], 'newname', 'filt eps', 'epochinfo', 'yes');
-    EEG = pop_rmbase( EEG, [-200  0]);
+    EEG = pop_epoch( EEG,ep_e,cfg.ERP.ep_time, 'newname', 'filt eps', 'epochinfo', 'yes');
+    EEG = pop_rmbase( EEG, cfg.ERP.BL);
     
     % save set 
     EEG.setname = [SUBJ{sub} '_clean_ERP_SO'];
@@ -85,6 +87,7 @@ for ii = 2:size(iclab_nms,2)
     end % SUB LOOP
     
     save([PATHOUT_ERP 'ERPall_' iclab_nms{ii} '.mat'],'ERP_all');
+    save ([PATHOUT_ERP 'cfg.mat'],'cfg');
     
 end % for different condition ICA
 

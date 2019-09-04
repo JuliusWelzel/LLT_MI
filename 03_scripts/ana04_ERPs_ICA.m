@@ -25,8 +25,13 @@ end
 % IC cons
 iclab_nms = {'Brain','mdrt','cnsvtv'};
 
+%idx channel
+idx_chan = 9;
+
+
 % document potential problems with a subject
 docError = {};   
+load ([PATHIN_ERP 'cfg.mat'])
 
 %% Gather all available datasets with clean EEG data
 list = dir(fullfile([PATHIN_ERP '*Brain_ep_filt.set']));
@@ -49,25 +54,37 @@ groups(3).idx = young;
 %%
 for i = 1:length(iclab_nms)
     load ([PATHIN_ERP 'ERPall_' iclab_nms{i} '.mat']);
-    
 for g = 1:length(groups)
     ss = 1;
     avgERP(g).group = groups(g).names;
     
 for sub = find(groups(g).idx)
     
-    % handiness
-    if length(ERP_all(sub).pics) == 0;continue;end% correct if more pics are empty
+    % correction
+    if length(ERP_all(sub).pics) <50;continue;end;% correct if more pics are empty
+    
     if length(ERP_all(sub).pics) > size(ERP_all(sub).mERP,3) % correct if more pics than epochs
         ERP_all(sub).pics(size(ERP_all(sub).mERP,3):end) = [];
+    elseif length(ERP_all(sub).pics) < size(ERP_all(sub).mERP,3) % correct if more pics than epochs
+        ERP_all(sub).mERP(size(ERP_all(sub).pics,3):end) = [];
     end
     
+    % correct artifact epochs
+    art_ep = squeeze(max(ERP_all(sub).mERP(idx_chan,:,:))) > 100 | squeeze(min(ERP_all(sub).mERP(idx_chan,:,:))) < -100;
+    ERP_all(sub).mERP(:,:,art_ep) = [];
+    ERP_all(sub).pics(art_ep) = [];
+    
+    ERP_all(sub).art_ep(i) = sum(art_ep);
+    
+
+    % stimuli
     for st = 1:length(ERP_all(sub).pics)
         stim_pics = ERP_all(sub).pics;
         stim_split = strsplit(stim_pics{st},{'_','.'});
         stim(st,:) = stim_split(2:5); % stores 4 properties of stimulus in cell in RT_ALL Position: 1=Limb, 2= orientation, 3=depth rotation, 4 = lateral rotation
     end
-    
+
+    %handiness
     idx_LH = contains(stim(:,1),'lh');
     idx_RH = contains(stim(:,1),'rh');
     avgERP(g).LH(:,:,ss) = mean(ERP_all(sub).mERP(:,:,idx_LH),3);
@@ -86,30 +103,37 @@ for sub = find(groups(g).idx)
     
     
     ss = ss+1;
+    clear stim
+    clear art_ep
 end
 
 end % groups
+ICA(i).avgERP = avgERP;
+clear avgERP
 
 end % ICA cons
 
 %% compare ERPs
-idx_P4 = 12;
-
 ccs = parula(9);
 cc = 1;
+tvec = cfg.ERP.ep_time(1):1000/(1000*cfg.ERP.resam):cfg.ERP.ep_time(2)-1000/(1000*cfg.ERP.resam);
 
 figure
 for i = 1:length(iclab_nms)
     
 for g = 1:length(groups)
         subplot(1,3,g)
-        plot(mean(avgERP(g).LH(idx_P4,:,:),3),'Color',ccs(cc,:))
+        plot(tvec,mean(ICA(i).avgERP(g).RH(idx_chan,:,:),3),'Color',ccs(cc,:))
         title ([groups(g).names])
         hold on
         cc = cc+1;
+        legend (iclab_nms)
+        xlabel 'time[s]'
+        ylabel 'amplitude [\muV]'
 end
+
+
 end
-legend 
         
 
 
