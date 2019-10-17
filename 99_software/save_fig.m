@@ -23,8 +23,8 @@ end
 % check for name value pairs
 % Parse inputs: 
 p = inputParser;
-defaultFontSize = 12; 
-defaultFigSize = [0 0 20 20];
+defaultFontSize = 8; 
+defaultFigSize = [0 0 35 20];
 defaultFigType = '.png';
 
 addParameter(p,'fontsize',defaultFontSize,@isnumeric);

@@ -13,8 +13,16 @@ if ~isdir(PATHOUT_eeg)
 end
 
 % set possible bad ICs
-iclab_cfg = {[2:7],[2,3,4,5],[3,5]};
-iclab_nms = {'Brain','mdrt','cnsvtv'};
+% 1: Brain
+% 2: Muscle
+% 3: Eye
+% 4: Heart
+% 5: Line noise
+% 6: Channel noise
+% 7: Other
+
+iclab_cfg = {[3:4]};
+iclab_nms = {'finICA'};
 
 % document potential problems with a subject
 docError = {};      

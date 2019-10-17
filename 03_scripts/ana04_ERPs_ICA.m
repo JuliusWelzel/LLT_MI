@@ -6,13 +6,13 @@
 
 % ERP analysis of LLT group data 
 % Data: nic_LLT (Niclas Braun, University of Oldenburg)
-% Author: Julius Welzel, 0Mareike Daeglau & Catharina Zich 
+% Author: Julius Welzel, Mareike Daeglau & Catharina Zich 
 % Supervisor: Cornelia Kranczioch (University of Oldenburg)
 
 
 global MAIN
 PATHIN_ERP = [MAIN '02_data\04_ERPs\'];
-
+PATHOUT_ERPplot = [MAIN '02_data\04_ERPs\ERP_plots\'];
 PATHOUT_ERP_ICA = [MAIN '02_data\04_ERPs_ICA\'];
 
 
@@ -23,7 +23,7 @@ if ~isdir(PATHOUT_ERP_ICA)
 end
 
 % IC cons
-iclab_nms = {'Brain','mdrt','cnsvtv'};
+iclab_nms = {'finICA'};
 
 %idx channel
 idx_chan = 9;
@@ -114,25 +114,39 @@ clear avgERP
 end % ICA cons
 
 %% compare ERPs
-ccs = parula(9);
-cc = 1;
 tvec = cfg.ERP.ep_time(1):1000/(1000*cfg.ERP.resam):cfg.ERP.ep_time(2)-1000/(1000*cfg.ERP.resam);
-
-figure
-for i = 1:length(iclab_nms)
-    
+idx_chan = [6,3,7,9,8,10,21,20,22];
+   
 for g = 1:length(groups)
-        subplot(1,3,g)
-        plot(tvec,mean(ICA(i).avgERP(g).RH(idx_chan,:,:),3),'Color',ccs(cc,:))
-        title ([groups(g).names])
-        hold on
-        cc = cc+1;
-        legend (iclab_nms)
-        xlabel 'time[s]'
+    figure 
+    for c = 1:length(idx_chan)
+        subplot(3,3,c)
+        mERP_rh = double(mean(ICA(1).avgERP(g).RH(idx_chan(c),:,:),3));
+        std_mERP_rh = double(std(ICA(1).avgERP(g).RH(idx_chan(c),:,:),[],3));
+        
+        mERP_lh = double(mean(ICA(1).avgERP(g).LH(idx_chan(c),:,:),3));
+        std_mERP_lh = double(std(ICA(1).avgERP(g).LH(idx_chan(c),:,:),[],3));
+        
+        bl = boundedline(tvec, mERP_rh, std_mERP_rh,...
+                    tvec, mERP_lh, std_mERP_lh,...
+            'alpha','cmap',[c_rh;c_lh]); % alpha makes bounds transparent
+        
+        title (cfg.EEG.chanlocs(idx_chan(c)).labels)
+        legend ([bl(1) bl(2)],{'RH','LH'})
+        xlabel 'time [s]'
         ylabel 'amplitude [\muV]'
-end
-
-
+        xlim ([-0.3 1.0])
+        ylim ([-2.5 2.5])
+        vline(0,'k');
+        vline([0.2 0.3],'--k');
+        % Add all our previous improvements:
+        ax = gca();
+        ax.XAxisLocation = 'origin';
+        ax.YAxisLocation = 'origin';
+        box off;
+    end
+    sgtitle ([groups(g).names])
+    save_fig(gcf,PATHOUT_ERPplot,['ERP_overview_' groups(g).names]);
 end
         
 
@@ -145,6 +159,7 @@ end
 
 
 %% ARCHIVE
+%{
 LH_O_P = {};
 con = {'LH','RH','LF','RF'};
 
@@ -244,3 +259,4 @@ end;
 yvals = gcapos(2)+gcapos(4)/2+PLOT_HEIGHT*yvals;  % controls height of plot 
                                                       % array on current axes
 
+%}

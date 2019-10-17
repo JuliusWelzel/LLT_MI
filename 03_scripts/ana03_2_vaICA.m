@@ -20,10 +20,10 @@ cfg.ERP.LP = 20;
 cfg.ERP.HP = 0.1;
 cfg.ERP.PRUNE = 3;
 cfg.ERP.resam = 500;
-cfg.ERP.ep_time = [-0.2 1.4];
-cfg.ERP.BL = [-200 0];
+cfg.ERP.ep_time = [-0.7 1.3];
+cfg.ERP.BL = [-500 -100];
 
-iclab_nms = {'Brain','mdrt','cnsvtv'};
+iclab_nms = {'finICA'};
 
 % document potential problems with a subject
 docError = {};   
@@ -33,7 +33,7 @@ list = dir(fullfile([PATHIN_eeg '*_brain_clean.set']));
 SUBJ = extractBefore({list.name},'_');
 
 %%
-for ii = 2:size(iclab_nms,2)
+for ii = 1:size(iclab_nms,2)
 
     for sub =1:length(SUBJ)
     %% check if dataset already exists

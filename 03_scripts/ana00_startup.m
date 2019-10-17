@@ -12,13 +12,16 @@
 
 clc; clear all; close all;
 
-MAIN = ['E:\LLT_MI\'];
+MAIN = ['F:\LLT_MI\'];
 addpath(genpath(MAIN));
 
 %Change MatLab defaults
 set(0,'defaultfigurecolor',[1 1 1]);
 
 cc = cbrewer('div','RdBu',7);
+
+c_rh = [22,162,168]/255;
+c_lh = [218,40,100]/255;
 
 
 
