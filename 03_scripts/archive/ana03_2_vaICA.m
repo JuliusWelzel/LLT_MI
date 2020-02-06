@@ -29,7 +29,7 @@ iclab_nms = {'finICA'};
 docError = {};   
 
 %% Gather all available datasets with clean EEG data
-list = dir(fullfile([PATHIN_eeg '*_brain_clean.set']));
+list = dir(fullfile([PATHIN_eeg '*_finICA_clean.set']));
 SUBJ = extractBefore({list.name},'_');
 
 %%
@@ -57,7 +57,7 @@ for ii = 1:size(iclab_nms,2)
     EEG = pop_eegfiltnew(EEG, [],cfg.ERP.HP,[],1,[],0);
             
     %re-ref the data
-    EEG = pop_reref(EEG,[]);
+    EEG = pop_reref(EEG,[18 19]);
     EEG = pop_interp(EEG,EEG.chanlocs, 'spherical');
     
     

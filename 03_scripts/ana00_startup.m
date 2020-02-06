@@ -12,7 +12,7 @@
 
 clc; clear all; close all;
 
-MAIN = ['F:\LLT_MI\'];
+MAIN = [fileparts(pwd) '\'];
 addpath(genpath(MAIN));
 
 %Change MatLab defaults

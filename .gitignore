@@ -1,2 +1,6 @@
-/02_data/*
-/99_software/eeglab14_1_2b/*
+/02_data/00_raw/*
+/02_data/01_ICAw/*
+/02_data/02_cleanEEG/*
+/02_data/03_RTs/*
+/02_data/04_ERPs/*
+/99_software/eeglab2019_1/*

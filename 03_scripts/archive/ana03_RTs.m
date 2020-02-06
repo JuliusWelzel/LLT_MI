@@ -22,13 +22,15 @@ end
 % document potential problems with a subject
 docError = {};   
 
+correcttrial = 0;
+
 if exist([PATHOUT_RTs 'RT_ALL.mat'],'file') == 2 % update for current evaluation
     load([PATHOUT_RTs 'RT_ALL.mat']);
 end
 
 
 %% Gather all available datasets with clean EEG data
-list = dir(fullfile([PATHIN_eeg '*clean.set']));
+list = dir(fullfile([PATHIN_eeg '*finICA_clean.set']));
 SUBJ = extractBefore({list.name},'_');
 
 %%
@@ -41,7 +43,7 @@ for sub =1:length(SUBJ)
     try
     %% load xdf files
         
-    EEG = pop_loadset('filename',[SUBJ{sub} '_clean.set'],'filepath',PATHIN_eeg);
+    EEG = pop_loadset('filename',[SUBJ{sub} '_finICA_clean.set'],'filepath',PATHIN_eeg);
     EEG = eeg_checkset(EEG, 'eventconsistency' );
     EEG.ID = SUBJ{sub};
     
@@ -58,21 +60,21 @@ for sub =1:length(SUBJ)
     [EEG] = trimOutlier(EEG, (meanstdAllPs-(3*stdstdAllPs)), (meanstdAllPs+(3*stdstdAllPs)), Inf, 0);
     
     %re-ref the data
-    EEG = pop_reref(EEG,[]);
+    EEG = pop_reref(EEG,[17 18]);
     EEG = pop_interp(EEG, originalEEG.chanlocs, 'spherical');
 
-    % get individual RTs for BP & SO & stimuli parameters
-    [EEG.RT_BP_ms, EEG.RT_SO_ms, EEG.audio_ep, EEG.error_ep] = RT_LLT(EEG,MAIN); % see RT_all for further detail
-    [EEG] = LLT_stim(EEG);
-    
-    
-    e_type = {EEG.event.type};
-    e_idx = contains({EEG.event.type},'E_');
-    ep_e = e_type(e_idx);
-    EEG = pop_epoch( EEG,ep_e, [-0.2  0.7], 'newname', 'filt eps', 'epochinfo', 'yes');
-    EEG = pop_rmbase( EEG, [-150  0]);
-    figure; pop_plottopo(EEG, [1:24] , ['P300 ALL STIMULI  // ' EEG.ID], 0, 'ydir',1);
-    save_fig(gcf,PATHOUT_ERPplot,[EEG.ID '_chanERP']);
+%     % get individual RTs for BP & SO & stimuli parameters
+%     [EEG.RT_BP_ms, EEG.RT_SO_ms, EEG.audio_ep, EEG.error_ep] = RT_LLT(EEG,MAIN); % see RT_all for further detail
+%     [EEG] = LLT_stim(EEG);
+%     
+%     
+%     e_type = {EEG.event.type};
+%     e_idx = contains({EEG.event.type},'E_');
+%     ep_e = e_type(e_idx);
+%     EEG = pop_epoch( EEG,ep_e, [-0.2  0.7], 'newname', 'filt eps', 'epochinfo', 'yes');
+%     EEG = pop_rmbase( EEG, [-150  0]);
+%     figure; pop_plottopo(EEG, [1:24] , ['P300 ALL STIMULI  // ' EEG.ID], 0, 'ydir',1);
+%     save_fig(gcf,PATHOUT_ERPplot,[EEG.ID '_chanERP']);
     
     % save set 
     EEG.setname = [SUBJ{sub},'_clean_ERP_SO'];
@@ -80,7 +82,7 @@ for sub =1:length(SUBJ)
 
    
     %% Correct trials with big difference BP & SO
-
+if correcttrial
     % check epoch with containing artifacts
     % find bad audio epochs
     figs = dir(fullfile([MAIN '02_data\03_RTs\find_RT_SO\' EEG.ID  '*epoch*.fig']));
@@ -162,6 +164,7 @@ for sub =1:length(SUBJ)
     RT_ALL(sub).speech_flag = EEG.speech_flag;
     RT_ALL(sub).stim = EEG.stim;
 
+end
 
 
     catch
@@ -172,11 +175,11 @@ for sub =1:length(SUBJ)
 
     end
    
-        % continue?
-    weiter = input('Enter 1 if next participant, 0 if abort: ');
-    if weiter == 0
-        break
-    end  
+%         % continue?
+%     weiter = input('Enter 1 if next participant, 0 if abort: ');
+%     if weiter == 0
+%         break
+%     end  
     
     end
     
