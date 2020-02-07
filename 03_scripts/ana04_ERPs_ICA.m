@@ -34,7 +34,7 @@ docError = {};
 load ([PATHIN_ERP 'cfg.mat'])
 
 %% Gather all available datasets with clean EEG data
-list = dir(fullfile([PATHIN_ERP '*Brain_ep_filt.set']));
+list = dir(fullfile([PATHIN_ERP '*_ep_filt.set']));
 SUBJ = str2double(extractBetween({list.name},'SUBJ','_'));
 
 old = SUBJ<70 & SUBJ>=30;
@@ -136,7 +136,7 @@ for g = 1:length(groups)
         xlabel 'time [s]'
         ylabel 'amplitude [\muV]'
         xlim ([-0.3 1.0])
-        ylim ([-2.5 2.5])
+        ylim ([-4 4])
         vline(0,'k');
         vline([0.2 0.3],'--k');
         % Add all our previous improvements:
