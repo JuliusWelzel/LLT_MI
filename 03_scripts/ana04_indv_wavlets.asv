@@ -174,8 +174,7 @@ cb = colorbar;
 ylabel(cb,'dB')
 xlabel 'time [s]'
 ylabel 'frequency [Hz]' 
-l = legend ('BL')
-l.Box = 'off'
+legend ''
 % overall title
 title 'Grand average all trials all participants [CPz]'
 

@@ -1,17 +1,14 @@
 % Get RTs of LLT data
 % Use speech onset function to evaluate RTs of every trial
 
-global MAIN
 PATHIN_eeg = [MAIN '02_data\02_cleanEEG\'];
 
-PATHOUT_ERP = [MAIN '02_data\04_ERPs\'];
-PATHOUT_ERPplot = [PATHOUT_ERP 'ERP_plots\'];
+PATHOUT_ERP = [MAIN '02_data\03_ERPs\'];
 
 
 %Check if PATHOUT-folder is already there; if not: create
 if ~isdir(PATHOUT_ERP)
     mkdir(PATHOUT_ERP)
-    mkdir(PATHOUT_ERPplot)
 end
 
 %creating variables for ICA
@@ -57,7 +54,7 @@ for ii = 1:size(iclab_nms,2)
     EEG = pop_eegfiltnew(EEG, [],cfg.ERP.HP,[],1,[],0);
             
     %re-ref the data
-    EEG = pop_reref(EEG,[18 19]);
+    EEG = pop_reref(EEG,[]);
     EEG = pop_interp(EEG,EEG.chanlocs, 'spherical');
     
     
@@ -87,6 +84,7 @@ for ii = 1:size(iclab_nms,2)
     end % SUB LOOP
     
     save([PATHOUT_ERP 'ERPall_' iclab_nms{ii} '.mat'],'ERP_all');
+    cfg.EEG.chanlocs = EEG.chanlocs;
     save ([PATHOUT_ERP 'cfg.mat'],'cfg');
     
 end % for different condition ICA

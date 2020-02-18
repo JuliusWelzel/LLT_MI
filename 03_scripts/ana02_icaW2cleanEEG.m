@@ -40,7 +40,7 @@ for sub = 1:length(SUBJ)
         pause(0.2);
     else
     try
-    for ii = 1:size(iclab_cfg,2)
+    for ii = 1
         
     % load dataset with ICA weights
     EEG         = pop_loadset('filename',[SUBJ{sub} '_ICAw.set'],'filepath',PATHIN_ica);
