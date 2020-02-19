@@ -107,9 +107,9 @@ dat_wvlt_all.data(idx_bad_part,:,:) = [];
 save([PATHOUT_WAVELETS 'wvlts_all.mat'],'dat_wvlt_all');
 
 %% Plot single subject CPz results
-load([PATHOUT_WAVELETS 'wvlts_all.mat']);
+if ~exist('dat_wvlt_all');load([PATHOUT_WAVELETS 'wvlts_all.mat']);end;
 
-psp = numSubplots(size(dat_wvlt_all.data,1));
+psp = numSubplots(size(dat_wvlt_all.data,1)+1);
 wvlt_bl = [-0.5 -0.2];
 
 
@@ -131,7 +131,7 @@ for s = 1:size(dat_wvlt_all.data,1)
     % plot data
     imagesc(dat_wvlt_all.times,dat_wvlt_all.freqs,tmp_dat_dB,[-10 10])
     axis xy
-    xlim ([-0.55 1.55])
+    xlim ([-0.55 2.5])
     ylim ([6 35])
     vline(0,{'k:', 'LineWidth', 0.5}); % epoch start
     title ([dat_wvlt_all.id(s)])
@@ -146,9 +146,11 @@ cb.Limits = [-10 10];
 ylabel(cb,'dB')
 xlabel 'time [s]'
 ylabel 'frequency [Hz]' 
-xlim ([-0.55 1.55])
+xlim ([-0.55 2.5])
 ylim ([6 35])
-vline(0,{'k:', 'LineWidth', 0.5});
+v = vline(0,{'k:', 'LineWidth', 0.5});
+legend ([v],'Stimulus')
+legend boxoff
 
 % overall title
 sgtitle 'CPz'
@@ -159,10 +161,22 @@ save_fig(gcf,PATHOUT_plots,'single_sub_wvlt_CPz')
 
 %% group for CPz all conditions
 
-% plot data
+% extract RT data
+vec_RTs = [];
+for s = 1:numel(RT_ALL)
+    
+    vec_RTs = [vec_RTs RT_ALL(s).SO_ms(11:end)];
+
+end
+
+%%
+close all
+figure
+% plot wvlt data
+subplot(3,1,[1:2])
 imagesc(dat_wvlt_all.times,dat_wvlt_all.freqs,squeeze(mean(dat_wvlt_all.data_dB,1)),[-8 8])
 axis xy
-xlim ([-0.55 1.55])
+xlim ([-0.55 2.5])
 ylim ([6 35])
 vline(0,{'k:', 'LineWidth', 2}); % epoch start
 
@@ -170,14 +184,33 @@ r = patch([-.5 -.5 -.2 -.2],[6 35 35 6],[.4 .4 .4]);
 r.FaceAlpha = .5;
 r.EdgeAlpha = 0;
 
-cb = colorbar;
-ylabel(cb,'dB')
-xlabel 'time [s]'
+% cb = colorbar;
+% ylabel(cb,'dB')
+% xlabel 'time [s]'
 ylabel 'frequency [Hz]' 
 l = legend ('BL')
 l.Box = 'off'
 % overall title
 title 'Grand average all trials all participants [CPz]'
+
+
+subplot(3,1,3)
+%prepare single data
+jitterAmount = 0.3;
+vals_jitter = 2*(rand(size(vec_RTs))-0.5)*jitterAmount;
+
+plot(vec_RTs/1000,vals_jitter+1,'.','Color',[.8 .8 .8],'LineWidth',0.7,'MarkerSize',5)
+hold on
+boxplot(vec_RTs/1000,1,'Orientation','horizontal','OutlierSize',0.00001,'Symbol','k.','Widths',0.25)
+
+tune_BP(c_rh)
+ax = gca;
+ax.YAxis.Visible = 'off'; % remove y-axis
+hold on
+box off
+xlim ([-0.55 2.5])
+xlabel 'time [s]'
+title 'Reaction times'
 
 
 save_fig(gcf,PATHOUT_plots,'GrAvg_wvlt_CPz')
