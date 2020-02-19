@@ -26,8 +26,6 @@ addpath('C:\Users\welzel-j\Desktop\toolboxes\fieldtrip-20191111');
 %Change MatLab defaults
 set(0,'defaultfigurecolor',[1 1 1]);
 
-cc = flip(cbrewer('div','RdBu',50));
-
 c_rh = [22,162,168]/255;
 c_lh = [218,40,100]/255;
 

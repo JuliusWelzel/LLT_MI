@@ -14,7 +14,7 @@ if ~isdir(PATHOUT_WAVELETS)
 end
 
 % assign necessary parameters for following analysis in EEGLAB *yay*
-cfg_el.ep_length   = [-1 2];
+cfg_el.ep_length   = [-1 3];
 cfg_el.ep_prune    = 3; % pruning parameters for rejection
 cfg_el.freqs       = [1:40]; % freqs OI
 cfg_el.srate       = 500; 
@@ -100,8 +100,9 @@ for sub = 1:length(SUBJ)
 
 end
 
-dat_wvlt_all.id(8) = [];
-dat_wvlt_all.data(8,:,:) = [];
+idx_bad_part = contains(dat_wvlt_all.id,{'SUBJ08','SUBJ11'});
+dat_wvlt_all.id(idx_bad_part) = [];
+dat_wvlt_all.data(idx_bad_part,:,:) = [];
 
 save([PATHOUT_WAVELETS 'wvlts_all.mat'],'dat_wvlt_all');
 
@@ -129,9 +130,8 @@ for s = 1:size(dat_wvlt_all.data,1)
 
     % plot data
     imagesc(dat_wvlt_all.times,dat_wvlt_all.freqs,tmp_dat_dB,[-10 10])
-    colormap
     axis xy
-    xlim ([-0.6 1.1])
+    xlim ([-0.55 1.55])
     ylim ([6 35])
     vline(0,{'k:', 'LineWidth', 0.5}); % epoch start
     title ([dat_wvlt_all.id(s)])
@@ -146,7 +146,7 @@ cb.Limits = [-10 10];
 ylabel(cb,'dB')
 xlabel 'time [s]'
 ylabel 'frequency [Hz]' 
-xlim ([-0.6 1.1])
+xlim ([-0.55 1.55])
 ylim ([6 35])
 vline(0,{'k:', 'LineWidth', 0.5});
 
@@ -162,7 +162,7 @@ save_fig(gcf,PATHOUT_plots,'single_sub_wvlt_CPz')
 % plot data
 imagesc(dat_wvlt_all.times,dat_wvlt_all.freqs,squeeze(mean(dat_wvlt_all.data_dB,1)),[-8 8])
 axis xy
-xlim ([-0.55 1.1])
+xlim ([-0.55 1.55])
 ylim ([6 35])
 vline(0,{'k:', 'LineWidth', 2}); % epoch start
 
