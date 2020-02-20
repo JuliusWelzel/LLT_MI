@@ -109,7 +109,7 @@ save([PATHOUT_WAVELETS 'wvlts_all.mat'],'dat_wvlt_all');
 %% Plot single subject CPz results
 if ~exist('dat_wvlt_all');load([PATHOUT_WAVELETS 'wvlts_all.mat']);end;
 
-psp = numSubplots(size(dat_wvlt_all.data,1)+1);
+psp     = numSubplots(size(dat_wvlt_all.data,1)+1);
 wvlt_bl = [-0.5 -0.2];
 
 
