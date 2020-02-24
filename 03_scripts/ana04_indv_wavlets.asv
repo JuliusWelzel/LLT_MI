@@ -30,13 +30,11 @@ list = dir(fullfile([PATHIN_eeg '*finICA_clean.set']));
 SUBJ = extractBefore({list.name},'_');
 
 %%
-doc_error = {};
-
+do
 for sub = 1:length(SUBJ)
     
-    try
     % check if dataset already exists
-    if exist([PATHOUT_WAVELETS 'wvlts_' SUBJ{sub} '.mat'],'file') == 2 % update for current evaluation
+    if exist([PATHOUT_WAVELETS 'wvlts_' SUBJ{sub} '.mat'],'file') == 99 % update for current evaluation
         disp(['WAVELETS for ' SUBJ{sub} ' have already been calculated. Continue with next dataset.']);
         continue;
     end
@@ -103,9 +101,8 @@ for sub = 1:length(SUBJ)
     end
     dat_wvlt.id = SUBJ{sub};
     dat_wvlt.events = stim;
-    clear stim
     
-    save([PATHOUT_WAVELETS 'wvlts_' SUBJ{sub} '.mat'],'dat_wvlt', '-v7.3');
+    save([PATHOUT_WAVELETS 'wvlts_' SUBJ{sub} '.mat'],'dat_wvlt');
     
     %% store for all participants
     
@@ -116,10 +113,6 @@ for sub = 1:length(SUBJ)
     dat_wvlt_all.times          = dat_wvlt.time;
     dat_wvlt_all.freqs          = dat_wvlt.freq;
 
-    catch
-        doc_error{end+1} = SUBJ(sub);
-    end %try subj
-    
 end
 
 idx_bad_part = contains(dat_wvlt_all.id,{'SUBJ08','SUBJ11'});
@@ -127,7 +120,6 @@ dat_wvlt_all.id(idx_bad_part) = [];
 dat_wvlt_all.data(idx_bad_part,:,:) = [];
 
 save([PATHOUT_WAVELETS 'wvlts_all.mat'],'dat_wvlt_all');
-save([PATHOUT_WAVELETS 'error_all.mat'],'doc_error');
 
 %% Plot single subject CPz results
 if ~exist('dat_wvlt_all');load([PATHOUT_WAVELETS 'wvlts_all.mat']);end;

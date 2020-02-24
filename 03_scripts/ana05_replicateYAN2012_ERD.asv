@@ -157,29 +157,28 @@ end
 
 %% Plot results // replicate figure 6
 
-nms_time_period = {'BL [-500:-200ms]','BEG [0:300ms]','MDL [300:800ms]','END [800:1400ms]'};
+nms_time_period = {'BL [-500ms:-200ms]','BEG [0:300ms]','MDL [300:800ms]'};
+
+% replicate Fig 4
+dat_erp_f4= dat_erp(:,:,[2,3]);
 
 close all
 figure
 i = 1;
-for p = 1:numel(nms_time_period)
+for p = [1 3]
 
-    subplot(3,4,p)
-    topoplot(mean(dat_lh_alpha(idx_stroke,:,i)),chanlocs,'maplimits',[-12 12]);
-    title (['S: ' nms_time_period{i}])
+    subplot(2,2,p)
+    topoplot(mean(dat_erp_f4(idx_old,:,i)),chanlocs,'maplimits',[-6 6]);
+    title (['O: ' nms_time_period{i}])
     
-    subplot(3,4,p+4)
-    topoplot(mean(dat_lh_alpha(idx_old,:,i),1),chanlocs,'maplimits',[-12 12]);
-    title (['O: ' nms_time_period{i}])    
-
-    subplot(3,4,p+8)
-    topoplot(mean(dat_lh_alpha(idx_young,:,i),1),chanlocs,'maplimits',[-12 12]);
-    title (['Y: ' nms_time_period{i}])    
+    subplot(2,2,1+p)
+    topoplot(mean(dat_erp_f4(idx_stroke,:,i)),chanlocs,'maplimits',[-6 6]);
+    title (['S: ' nms_time_period{i}])    
     
     i = i+1;
 end
 
-sgtitle 'Figure 6. Time-course ERD LH'
+sgtitle 'Figure 4. Brain mappings of ERP'
 
 
 
