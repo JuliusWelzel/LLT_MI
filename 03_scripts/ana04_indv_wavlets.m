@@ -81,6 +81,7 @@ for sub = 1:length(SUBJ)
     cfg.foi         = 1:1:35; %frequency range
     cfg.toi         = dat_wvlt.time{1};
     cfg.width       = linspace(5,8,numel(cfg.foi));
+    cfg.pad         ='nextpow2'; %quicker computatio time
     dat_wvlt        = ft_freqanalysis(cfg, dat_wvlt);
 
     cfg = [];
@@ -122,10 +123,6 @@ for sub = 1:length(SUBJ)
     
 end
 
-idx_bad_part = contains(dat_wvlt_all.id,{'SUBJ08','SUBJ11'});
-dat_wvlt_all.id(idx_bad_part) = [];
-dat_wvlt_all.data(idx_bad_part,:,:) = [];
-
 save([PATHOUT_WAVELETS 'wvlts_all.mat'],'dat_wvlt_all');
 save([PATHOUT_WAVELETS 'error_all.mat'],'doc_error');
 
@@ -145,8 +142,7 @@ for s = 1:size(dat_wvlt_all.data,1)
     tmp_dat     = squeeze(dat_wvlt_all.data(s,:,:)); %trials x 1channel x freqs x time
     idx_bl      = dsearchn(dat_wvlt_all.times',wvlt_bl');
     tmp_bl      = squeeze(mean(tmp_dat(:,idx_bl(1):idx_bl(2)),2));
-    tmp_dat_dB  = squeeze(tmp_dat-tmp_bl);
-    tmp_dat_dB  = 10*log(tmp_dat./tmp_bl); %transform to dB // dB = 10*log10 (signal/baseline)
+    tmp_dat_dB  = real(10*log10(tmp_dat./tmp_bl)); %transform to dB // dB = 10*log10 (signal/baseline)
     
     %store for all subs
     dat_wvlt_all.data_dB(s,:,:)     = tmp_dat_dB;

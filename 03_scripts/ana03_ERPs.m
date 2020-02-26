@@ -32,7 +32,7 @@ SUBJ = str2double(extractBetween({list.name},'SUBJ','_'));
 % define groups
 old     = SUBJ<70 & SUBJ>=30;
 young   = SUBJ>= 70;
-stroke  = SUBJ <=30;
+stroke  = SUBJ <30;
 
 % groups vars for plotting
 g_nms   = {'stroke','old','young'}; 

@@ -24,6 +24,9 @@ if ~isdir(PATHOUT_YAN)
 end
 
 %% Gather all available datacfg_elts with clean EEG data
+% load RTs 
+load([PATHIN_RTs 'RT_ALL.mat']);
+
 list = dir(fullfile([PATHIN_ERP '*_ep_filt.set']));
 SUBJ = str2double(extractAfter({RT_ALL.ID},'SUBJ'));
 
@@ -46,10 +49,6 @@ groups(3).idx = idx_young;
 
 %% replicate behavioural analysis
 
-% load RTs 
-load([PATHIN_RTs 'RT_ALL.mat']);
-
-%% get data behavioural
 
 for s = 1:numel(RT_ALL)
     
@@ -199,11 +198,13 @@ save_fig(gcf,PATHOUT_plots,'rep_yan12_fig2','FigSize',[0 0 24 20]);
 %% replicate ERP analysis
 
 %load ERPs
-load ([PATHIN_ERP 'ERPall_finICA.mat']);
+load ([PATHIN_ERP 'ERPall_finICA.mat']); % from ana03_preERP // filter [0.1-20Hz] // 100 srate // CAR // BL [-500 -100]
 idx_bad_part = ~contains({ERP_all.ID},{RT_ALL.ID});
 ERP_all(idx_bad_part) = []; %remove bad participants
 load ([PATHIN_ERP 'cfg.mat']);
 chanlocs = readlocs([MAIN '99_software\mobile24_proper_labels.elp']);
+idx_chanref = contains({chanlocs.labels},{'TP9','TP10'});
+chanlocs(idx_chanref) =  [];
 SUBJ = str2double(extractAfter({ERP_all.ID},'SUBJ'));
 
 % define groups
@@ -228,30 +229,31 @@ for s = 1:numel(ERP_all)
     idx_cor     = logical(RT_ALL(idx_sub_in_RTall).acc(11:end));
    
     % create 3D matrix [subs x channel x time_period] -> 56 x 24 x 4(BL,BEG,MDL,END)
-    dat_erp_lh(s,:,1) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_bl,idx_lh & idx_cor),3),2)); 
-    dat_erp_lh(s,:,2) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_beg,idx_lh & idx_cor),3),2)); 
-    dat_erp_lh(s,:,3) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_mdl,idx_lh & idx_cor),3),2)); 
-    dat_erp_lh(s,:,4) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_end,idx_lh & idx_cor),3),2)); 
+    dat_tp_lh(s,:,1) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_bl,idx_lh & idx_cor),3),2)); 
+    dat_tp_lh(s,:,2) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_beg,idx_lh & idx_cor),3),2)); 
+    dat_tp_lh(s,:,3) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_mdl,idx_lh & idx_cor),3),2)); 
+    dat_tp_lh(s,:,4) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_end,idx_lh & idx_cor),3),2)); 
     
-    dat_erp_rh(s,:,1) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_bl,idx_rh & idx_cor),3),2)); 
-    dat_erp_rh(s,:,2) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_beg,idx_rh & idx_cor),3),2)); 
-    dat_erp_rh(s,:,3) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_mdl,idx_rh & idx_cor),3),2)); 
-    dat_erp_rh(s,:,4) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_end,idx_rh & idx_cor),3),2)); 
+    dat_tp_rh(s,:,1) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_bl,idx_rh & idx_cor),3),2)); 
+    dat_tp_rh(s,:,2) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_beg,idx_rh & idx_cor),3),2)); 
+    dat_tp_rh(s,:,3) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_mdl,idx_rh & idx_cor),3),2)); 
+    dat_tp_rh(s,:,4) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_end,idx_rh & idx_cor),3),2)); 
 
-    dat_erp(s,:,1) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_bl,idx_cor),3),2)); 
-    dat_erp(s,:,2) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_beg,idx_cor),3),2)); 
-    dat_erp(s,:,3) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_mdl,idx_cor),3),2)); 
-    dat_erp(s,:,4) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_end,idx_cor),3),2)); 
+    dat_tp(s,:,1) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_bl,idx_cor),3),2)); 
+    dat_tp(s,:,2) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_beg,idx_cor),3),2)); 
+    dat_tp(s,:,3) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_mdl,idx_cor),3),2)); 
+    dat_tp(s,:,4) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_end,idx_cor),3),2)); 
 
 
 end
 
 %% Plot ERP results
+load('cfg.mat');
 
 nms_time_period = {'P200 [0:300ms]','P300 [300:800ms]'};
 
 % replicate Fig 4
-dat_erp_f4= dat_erp(:,:,[2,3]);
+dat_erp_f4= dat_tp(:,:,[2,3]);
 
 close all
 figure
@@ -259,11 +261,11 @@ i = 1;
 for p = [1 3]
 
     subplot(2,2,p)
-    topoplot(mean(dat_erp_f4(idx_old,:,i)),chanlocs,'maplimits',[-6 6]);
+    topoplot(mean(dat_erp_f4(idx_old,:,i)),chanlocs,'maplimits',[-10 10]);
     title (['O: ' nms_time_period{i}])
     
     subplot(2,2,1+p)
-    topoplot(mean(dat_erp_f4(idx_stroke,:,i)),chanlocs,'maplimits',[-6 6]);
+    topoplot(mean(dat_erp_f4(idx_stroke,:,i)),chanlocs,'maplimits',[-10 10]);
     title (['S: ' nms_time_period{i}])    
     
     i = i+1;
@@ -273,6 +275,259 @@ sgtitle 'Figure 4. Brain mappings of ERP'
 save_fig(gcf,PATHOUT_plots,'rep_yan12_fig4','FigSize',[0 0 25 20]);
 
 
-%% replicate ERD results
+%% replicate yan12 figure 3 eith P4 & Pz
+% from ana03_preERP // filter [0.1-20Hz] // 100 srate // CAR // BL [-500 -100]
+
+idx_Pz = strcmp({chanlocs.labels},'Pz');
+idx_P4 = strcmp({chanlocs.labels},'P4');
+
+
+for s = 1:numel(ERP_all)
+    
+    % get stimuli information
+    
+    stim = splitLLTstim(ERP_all(s).pics); % 4 positions - 1. Laterality [LH, RH, LF, RF] // 2. View [back,palm] // ...
+                                                       % 3. in depth rotation // 4. lateral rotation 
+    
+    idx_lh      = contains(stim(1,:),'lh');
+    idx_rh      = contains(stim(1,:),'rh');
+    idx_lf      = contains(stim(1,:),'lf');
+    idx_rf      = contains(stim(1,:),'rf');
+ 
+    idx_0       = contains(stim(4,:),'0');
+    idx_60      = contains(stim(4,:),'60') | contains(stim(4,:),'300');
+    idx_120     = contains(stim(4,:),'120')| contains(stim(4,:),'240');
+    idx_180     = contains(stim(4,:),'180');
+    
+    % correct stimuli
+    idx_sub_in_RTall    = strcmp({RT_ALL.ID},{ERP_all(s).ID});
+    idx_cor             = logical(RT_ALL(idx_sub_in_RTall).acc(11:end));
+    idx_art             = squeeze(sum(ERP_all(s).mERP(idx_Pz,:,:) > 100,2))';
+   
+    % create 2D matrix [subs x samples] -> 56 x 200
+    % laterality
+    dat_erp_lh(s,:) = mean(ERP_all(s).mERP(idx_Pz,:,idx_lh & ~idx_art & idx_cor),3); 
+    dat_erp_rh(s,:) = mean(ERP_all(s).mERP(idx_Pz,:,idx_rh & ~idx_art & idx_cor),3); 
+    dat_erp_lf(s,:) = mean(ERP_all(s).mERP(idx_Pz,:,idx_lf & ~idx_art & idx_cor),3); 
+    dat_erp_rf(s,:) = mean(ERP_all(s).mERP(idx_Pz,:,idx_rf & ~idx_art & idx_cor),3); 
+     
+    %rotation only hands
+    dat_erp_0(s,:)      = mean(ERP_all(s).mERP(idx_Pz,:,idx_0 & ~idx_art & idx_cor),3); 
+    dat_erp_60(s,:)     = mean(ERP_all(s).mERP(idx_Pz,:,idx_60 & ~idx_art & idx_cor),3); 
+    dat_erp_120(s,:)    = mean(ERP_all(s).mERP(idx_Pz,:,idx_120 & ~idx_art & idx_cor),3); 
+    dat_erp_180(s,:)    = mean(ERP_all(s).mERP(idx_Pz,:,idx_180 & ~idx_art & idx_cor),3); 
+
+   
+end
+
+
+%% plot results
+close all
+figure
+
+%degree
+subplot(3,2,1)
+plot(ep_time,mean(dat_erp_0(idx_stroke,:)))
+hold on
+plot(ep_time,mean(dat_erp_60(idx_stroke,:)))
+hold on
+plot(ep_time,mean(dat_erp_120(idx_stroke,:)))
+hold on
+plot(ep_time,mean(dat_erp_180(idx_stroke,:)))
+
+title 'Stroke patient'
+erp_leg({'0°','\pm60°','\pm120°','180°'})
+
+
+subplot(3,2,3)
+plot(ep_time,mean(dat_erp_0(idx_old,:)))
+hold on
+plot(ep_time,mean(dat_erp_60(idx_old,:)))
+hold on
+plot(ep_time,mean(dat_erp_120(idx_old,:)))
+hold on
+plot(ep_time,mean(dat_erp_180(idx_old,:)))
+
+title 'Old subjects'
+erp_leg({'0°','\pm60°','\pm120°','180°'})
+
+subplot(3,2,5)
+plot(ep_time,mean(dat_erp_0(idx_young,:)))
+hold on
+plot(ep_time,mean(dat_erp_60(idx_young,:)))
+hold on
+plot(ep_time,mean(dat_erp_120(idx_young,:)))
+hold on
+plot(ep_time,mean(dat_erp_180(idx_young,:)))
+
+title ' Young subjects'
+erp_leg({'0°','\pm60°','\pm120°','180°'})
+
+
+%Hands
+subplot(3,2,2)
+plot(ep_time,mean(dat_erp_lh(idx_stroke,:)))
+hold on
+plot(ep_time,mean(dat_erp_rh(idx_stroke,:)))
+hold on
+plot(ep_time,mean(dat_erp_lf(idx_stroke,:)))
+hold on
+plot(ep_time,mean(dat_erp_rf(idx_stroke,:)))
+
+title 'Stroke patient'
+erp_leg({'LH','RH','LF','RF'})
+
+subplot(3,2,4)
+plot(ep_time,mean(dat_erp_lh(idx_old,:)))
+hold on
+plot(ep_time,mean(dat_erp_rh(idx_old,:)))
+hold on
+plot(ep_time,mean(dat_erp_lf(idx_old,:)))
+hold on
+plot(ep_time,mean(dat_erp_rf(idx_old,:)))
+
+title 'Old subjects'
+erp_leg({'LH','RH','LF','RF'})
+
+subplot(3,2,6)
+plot(ep_time,mean(dat_erp_lh(idx_young,:)))
+hold on
+plot(ep_time,mean(dat_erp_rh(idx_young,:)))
+hold on
+plot(ep_time,mean(dat_erp_lf(idx_young,:)))
+hold on
+plot(ep_time,mean(dat_erp_rf(idx_young,:)))
+
+title ' Young subjects'
+erp_leg({'LH','RH','LF','RF'})
+
+
+sgtitle 'Pz'
+
+
+save_fig(gcf,PATHOUT_plots,'rep_yan12_fig4_Pz','FigSize',[0 0 25 20]);
+
+
+
+
+%% HAND ERP all groups
+
+c_stroke    = c_rh;
+c_old       = c_lh;
+c_young     = [149,165,166]/255;
+
+% hand
+% stroke
+mERP_f_s        = mean([dat_erp_lh(idx_stroke,:);dat_erp_lh(idx_stroke,:)]);
+std_mERP_f_s    = std([dat_erp_lh(idx_stroke,:);dat_erp_lh(idx_stroke,:)])/sqrt(sum((idx_stroke)));
+%old
+mERP_h_o        = mean([dat_erp_lh(idx_old,:);dat_erp_lh(idx_old,:)]);
+std_mERP_h_o    = std([dat_erp_lh(idx_old,:);dat_erp_lh(idx_old,:)])/sqrt(sum((idx_old)));
+% young
+mERP_h_y        = mean([dat_erp_lh(idx_young,:);dat_erp_lh(idx_young,:)]);
+std_mERP_h_y    = std([dat_erp_lh(idx_young,:);dat_erp_lh(idx_young,:)])/sqrt(sum((idx_young)));
+
+
+close all
+figure
+bl = boundedline(   ep_time, mERP_f_s, std_mERP_f_s,...
+                    ep_time, mERP_h_o, std_mERP_h_o,...
+                    ep_time, mERP_h_y, std_mERP_h_y,...
+    'alpha','cmap',[c_stroke;c_old;c_young]); % alpha makes bounds transparent
+
+legend ([bl(1) bl(2) bl(3)],{'stroke','old','young'})
+legend('boxoff')
+xlabel 'time [ms]'
+ylabel 'amplitude [\muV]'
+xlim ([-300 1200])
+ylim ([-20 20])
+vline(0,'--k');
+bl(1).LineWidth = 1;
+bl(2).LineWidth = 1;
+bl(3).LineWidth = 1;
+
+% Add all our previous improvements:
+ax = gca();
+ax.XAxisLocation = 'origin';
+ax.YAxisLocation = 'origin';
+box off;
+title 'Hand ERP at Pz'
+
+save_fig(gcf,PATHOUT_plots,['ERP_hand']);
+
+
+%% HAND ERP all groups
+
+c_stroke    = c_rh;
+c_old       = c_lh;
+c_young     = [149,165,166]/255;
+
+% hand
+% stroke
+mERP_f_s        = mean([dat_erp_lf(idx_stroke,:);dat_erp_lf(idx_stroke,:)]);
+std_mERP_f_s    = std([dat_erp_lf(idx_stroke,:);dat_erp_lf(idx_stroke,:)])/sqrt(sum((idx_stroke)));
+%old
+mERP_f_o        = mean([dat_erp_lf(idx_old,:);dat_erp_lf(idx_old,:)]);
+std_mERP_f_o    = std([dat_erp_lf(idx_old,:);dat_erp_lf(idx_old,:)])/sqrt(sum((idx_old)));
+% young
+mERP_f_y        = mean([dat_erp_lf(idx_young,:);dat_erp_lf(idx_young,:)]);
+std_mERP_f_y    = std([dat_erp_lf(idx_young,:);dat_erp_lf(idx_young,:)])/sqrt(sum((idx_young)));
+
+
+close all
+figure
+bl = boundedline(   ep_time, mERP_f_s, std_mERP_f_s,...
+                    ep_time, mERP_f_o, std_mERP_f_o,...
+                    ep_time, mERP_f_y, std_mERP_f_y,...
+    'alpha','cmap',[c_stroke;c_old;c_young]); % alpha makes bounds transparent
+
+legend ([bl(1) bl(2) bl(3)],{'stroke','old','young'})
+legend('boxoff')
+xlabel 'time [ms]'
+ylabel 'amplitude [\muV]'
+xlim ([-300 1200])
+ylim ([-20 20])
+vline(0,'--k');
+bl(1).LineWidth = 1;
+bl(2).LineWidth = 1;
+bl(3).LineWidth = 1;
+
+% Add all our previous improvements:
+ax = gca();
+ax.XAxisLocation = 'origin';
+ax.YAxisLocation = 'origin';
+box off;
+title 'Feet ERP at Pz'
+
+save_fig(gcf,PATHOUT_plots,['ERP_feet']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
