@@ -52,10 +52,17 @@ groups(3).idx = idx_young;
 
 for s = 1:numel(RT_ALL)
     
+    nms_f = fieldnames(RT_ALL);
+    for f = 2:numel(nms_f)-1
+        RT_ALL(s).(nms_f{f})(1:10) = [];
+    end
+    RT_ALL(s).stim(1:10,:) = [];
+        
+    
     % handiness
-    idx_lh      = strcmp(RT_ALL(s).stim(11:end,1),'lh');
-    idx_rh      = strcmp(RT_ALL(s).stim(11:end,1),'rh');
-    idx_cor     = logical(RT_ALL(s).acc(11:end)');
+    idx_lh      = strcmp(RT_ALL(s).stim(:,1),'lh');
+    idx_rh      = strcmp(RT_ALL(s).stim(:,1),'rh');
+    idx_cor     = logical(RT_ALL(s).acc(:));
    
     % create 3D matrix [subs x hand x mod] -> 56 x 2(LH,RH) x 2(RT,ACC)
     dat_b_hand(s,1,1) = nanmean(RT_ALL(s).SO_ms(idx_lh & idx_cor)); 
@@ -65,8 +72,10 @@ for s = 1:numel(RT_ALL)
     
     
     %angle
-    idx_60      = strcmp(RT_ALL(s).stim(11:end,4),'60') | strcmp(RT_ALL(s).stim(11:end,4),'300');    
-    idx_120     = strcmp(RT_ALL(s).stim(11:end,4),'120') | strcmp(RT_ALL(s).stim(11:end,4),'240');
+    idx_60      = strcmp(RT_ALL(s).stim(:,4),'60') & contains(RT_ALL(s).stim(:,1),'h') |...
+                    strcmp(RT_ALL(s).stim(:,4),'300') & contains(RT_ALL(s).stim(:,1),'h');   
+    idx_120     = strcmp(RT_ALL(s).stim(:,4),'120') & contains(RT_ALL(s).stim(:,1),'h') | ...
+                    strcmp(RT_ALL(s).stim(:,4),'240') & contains(RT_ALL(s).stim(:,1),'h');
     
     % create 3D matrix [subs x ang x mod] -> 56 x 2(60,120) x 2(RT,ACC)
     dat_b_ang(s,1,1) = nanmean(RT_ALL(s).SO_ms(idx_60 & idx_cor));
@@ -191,7 +200,7 @@ xticklabels ({'+-60°','+-120°'})
 legend({'Control','Stroke'})
 box off
 sgtitle 'Figure 2. Behavior performance.'
-save_fig(gcf,PATHOUT_plots,'rep_yan12_fig2','FigSize',[0 0 24 20]);
+% save_fig(gcf,PATHOUT_plots,'rep_yan12_fig2','FigSize',[0 0 24 20]);
 
 
 
@@ -226,7 +235,7 @@ for s = 1:numel(ERP_all)
     idx_lh      = contains(ERP_all(s).pics,'lh');
     idx_rh      = contains(ERP_all(s).pics,'rh');
     idx_sub_in_RTall = strcmp({RT_ALL.ID},{ERP_all(s).ID});
-    idx_cor     = logical(RT_ALL(idx_sub_in_RTall).acc(11:end));
+    idx_cor     = logical(RT_ALL(idx_sub_in_RTall).acc(:))';
    
     % create 3D matrix [subs x channel x time_period] -> 56 x 24 x 4(BL,BEG,MDL,END)
     dat_tp_lh(s,:,1) = squeeze(mean(mean(ERP_all(s).mERP(:,idx_bl,idx_lh & idx_cor),3),2)); 
@@ -294,14 +303,14 @@ for s = 1:numel(ERP_all)
     idx_lf      = contains(stim(1,:),'lf');
     idx_rf      = contains(stim(1,:),'rf');
  
-    idx_0       = contains(stim(4,:),'0');
-    idx_60      = contains(stim(4,:),'60') | contains(stim(4,:),'300');
-    idx_120     = contains(stim(4,:),'120')| contains(stim(4,:),'240');
-    idx_180     = contains(stim(4,:),'180');
+    idx_0       = strcmp(stim(4,:),'0');
+    idx_60      = strcmp(stim(4,:),'60') | strcmp(stim(4,:),'300');
+    idx_120     = strcmp(stim(4,:),'120')| strcmp(stim(4,:),'240');
+    idx_180     = strcmp(stim(4,:),'180');
     
     % correct stimuli
     idx_sub_in_RTall    = strcmp({RT_ALL.ID},{ERP_all(s).ID});
-    idx_cor             = logical(RT_ALL(idx_sub_in_RTall).acc(11:end));
+    idx_cor             = logical(RT_ALL(idx_sub_in_RTall).acc(:))';
     idx_art             = squeeze(sum(ERP_all(s).mERP(idx_Pz,:,:) > 100,2))';
    
     % create 2D matrix [subs x samples] -> 56 x 200

@@ -29,5 +29,12 @@ set(0,'defaultfigurecolor',[1 1 1]);
 c_rh = [22,162,168]/255;
 c_lh = [218,40,100]/255;
 
+c_stroke    = [149,165,166]/255;
+c_old       = c_lh;
+c_young     = c_rh;
+
+c_lat = c_lh;
+c_med = c_rh;
+
 
 
