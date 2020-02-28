@@ -72,16 +72,29 @@ for s = 1:numel(RT_ALL)
     
     
     %angle
-    idx_60      = strcmp(RT_ALL(s).stim(:,4),'60') & contains(RT_ALL(s).stim(:,1),'h') |...
+    idx_60_h      = strcmp(RT_ALL(s).stim(:,4),'60') & contains(RT_ALL(s).stim(:,1),'h') |...
                     strcmp(RT_ALL(s).stim(:,4),'300') & contains(RT_ALL(s).stim(:,1),'h');   
-    idx_120     = strcmp(RT_ALL(s).stim(:,4),'120') & contains(RT_ALL(s).stim(:,1),'h') | ...
+    idx_120_h     = strcmp(RT_ALL(s).stim(:,4),'120') & contains(RT_ALL(s).stim(:,1),'h') | ...
                     strcmp(RT_ALL(s).stim(:,4),'240') & contains(RT_ALL(s).stim(:,1),'h');
+                
+    %angle
+    idx_60_f      = strcmp(RT_ALL(s).stim(:,4),'60') & contains(RT_ALL(s).stim(:,1),'f') |...
+                    strcmp(RT_ALL(s).stim(:,4),'300') & contains(RT_ALL(s).stim(:,1),'f');   
+    idx_120_f     = strcmp(RT_ALL(s).stim(:,4),'120') & contains(RT_ALL(s).stim(:,1),'f') | ...
+                    strcmp(RT_ALL(s).stim(:,4),'240') & contains(RT_ALL(s).stim(:,1),'f');
+
+    % create 3D matrix [subs x ang x mod] -> 56 x 2(60,120) x 2(RT,ACC)
+    dat_b_ang_h(s,1,1) = nanmean(RT_ALL(s).SO_ms(idx_60_h & idx_cor));
+    dat_b_ang_h(s,2,1) = nanmean(RT_ALL(s).SO_ms(idx_120_h & idx_cor));
+    dat_b_ang_h(s,1,2) = nanmean(RT_ALL(s).acc(idx_60_h));
+    dat_b_ang_h(s,2,2) = nanmean(RT_ALL(s).acc(idx_120_h));
     
     % create 3D matrix [subs x ang x mod] -> 56 x 2(60,120) x 2(RT,ACC)
-    dat_b_ang(s,1,1) = nanmean(RT_ALL(s).SO_ms(idx_60 & idx_cor));
-    dat_b_ang(s,2,1) = nanmean(RT_ALL(s).SO_ms(idx_120 & idx_cor));
-    dat_b_ang(s,1,2) = nanmean(RT_ALL(s).acc(idx_60));
-    dat_b_ang(s,2,2) = nanmean(RT_ALL(s).acc(idx_120));
+    dat_b_ang_f(s,1,1) = nanmean(RT_ALL(s).SO_ms(idx_60_f & idx_cor));
+    dat_b_ang_f(s,2,1) = nanmean(RT_ALL(s).SO_ms(idx_120_f & idx_cor));
+    dat_b_ang_f(s,1,2) = nanmean(RT_ALL(s).acc(idx_60_f));
+    dat_b_ang_f(s,2,2) = nanmean(RT_ALL(s).acc(idx_120_f));
+
 
 end
 
@@ -148,15 +161,15 @@ box off
 %%%%%%%%%%%%%%% plot behaviroual results angle %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % prepare data
-RT_LH_s = dat_b_ang(idx_stroke,1,1);
-RT_LH_o = dat_b_ang(idx_old,1,1);
-RT_RH_s = dat_b_ang(idx_stroke,2,1);
-RT_RH_o = dat_b_ang(idx_old,2,1);
+RT_LH_s = dat_b_ang_h(idx_stroke,1,1);
+RT_LH_o = dat_b_ang_h(idx_old,1,1);
+RT_RH_s = dat_b_ang_h(idx_stroke,2,1);
+RT_RH_o = dat_b_ang_h(idx_old,2,1);
 
-ACC_LH_s = dat_b_ang(idx_stroke,1,2);
-ACC_LH_o = dat_b_ang(idx_old,1,2);
-ACC_RH_s = dat_b_ang(idx_stroke,2,2);
-ACC_RH_o = dat_b_ang(idx_old,2,2);
+ACC_LH_s = dat_b_ang_h(idx_stroke,1,2);
+ACC_LH_o = dat_b_ang_h(idx_old,1,2);
+ACC_RH_s = dat_b_ang_h(idx_stroke,2,2);
+ACC_RH_o = dat_b_ang_h(idx_old,2,2);
 
 % RT compare old stroke
 [m_LH_o se_LH_o] = mean_SEM(RT_LH_o');
@@ -200,7 +213,7 @@ xticklabels ({'+-60°','+-120°'})
 legend({'Control','Stroke'})
 box off
 sgtitle 'Figure 2. Behavior performance.'
-% save_fig(gcf,PATHOUT_plots,'rep_yan12_fig2','FigSize',[0 0 24 20]);
+save_fig(gcf,PATHOUT_plots,'rep_yan12_fig2','FigSize',[0 0 24 20]);
 
 
 
@@ -303,10 +316,19 @@ for s = 1:numel(ERP_all)
     idx_lf      = contains(stim(1,:),'lf');
     idx_rf      = contains(stim(1,:),'rf');
  
-    idx_0       = strcmp(stim(4,:),'0');
-    idx_60      = strcmp(stim(4,:),'60') | strcmp(stim(4,:),'300');
-    idx_120     = strcmp(stim(4,:),'120')| strcmp(stim(4,:),'240');
-    idx_180     = strcmp(stim(4,:),'180');
+    
+    %angle
+    idx_60_h      = strcmp(stim(4,:),'60') & contains(stim(1,:),'h') |...
+                    strcmp(stim(4,:),'300') & contains(stim(1,:),'h');   
+    idx_120_h     = strcmp(stim(4,:),'120') & contains(stim(1,:),'h') | ...
+                    strcmp(stim(4,:),'240') & contains(stim(1,:),'h');
+                
+    %angle
+    idx_60_f      = strcmp(stim(4,:),'60') & contains(stim(1,:),'f') |...
+                    strcmp(stim(4,:),'300') & contains(stim(1,:),'f');   
+    idx_120_f     = strcmp(stim(4,:),'120') & contains(stim(1,:),'f') | ...
+                    strcmp(stim(4,:),'240') & contains(stim(1,:),'f');
+
     
     % correct stimuli
     idx_sub_in_RTall    = strcmp({RT_ALL.ID},{ERP_all(s).ID});
@@ -321,12 +343,13 @@ for s = 1:numel(ERP_all)
     dat_erp_rf(s,:) = mean(ERP_all(s).mERP(idx_Pz,:,idx_rf & ~idx_art & idx_cor),3); 
      
     %rotation only hands
-    dat_erp_0(s,:)      = mean(ERP_all(s).mERP(idx_Pz,:,idx_0 & ~idx_art & idx_cor),3); 
-    dat_erp_60(s,:)     = mean(ERP_all(s).mERP(idx_Pz,:,idx_60 & ~idx_art & idx_cor),3); 
-    dat_erp_120(s,:)    = mean(ERP_all(s).mERP(idx_Pz,:,idx_120 & ~idx_art & idx_cor),3); 
-    dat_erp_180(s,:)    = mean(ERP_all(s).mERP(idx_Pz,:,idx_180 & ~idx_art & idx_cor),3); 
+    dat_erp_60_h(s,:)     = mean(ERP_all(s).mERP(idx_Pz,:,idx_60_h & ~idx_art & idx_cor),3); 
+    dat_erp_120_h(s,:)    = mean(ERP_all(s).mERP(idx_Pz,:,idx_120_h & ~idx_art & idx_cor),3); 
 
-   
+    %rotation only feet
+    dat_erp_60_f(s,:)     = mean(ERP_all(s).mERP(idx_Pz,:,idx_60_f & ~idx_art & idx_cor),3); 
+    dat_erp_120_f(s,:)    = mean(ERP_all(s).mERP(idx_Pz,:,idx_120_f & ~idx_art & idx_cor),3); 
+
 end
 
 
@@ -334,47 +357,62 @@ end
 close all
 figure
 
-%degree
-subplot(3,2,1)
-plot(ep_time,mean(dat_erp_0(idx_stroke,:)))
+%degree hand
+subplot(3,3,1)
+plot(ep_time,mean(dat_erp_60_h(idx_stroke,:)))
 hold on
-plot(ep_time,mean(dat_erp_60(idx_stroke,:)))
-hold on
-plot(ep_time,mean(dat_erp_120(idx_stroke,:)))
-hold on
-plot(ep_time,mean(dat_erp_180(idx_stroke,:)))
+plot(ep_time,mean(dat_erp_120_h(idx_stroke,:)))
 
-title 'Stroke patient'
-erp_leg({'0°','\pm60°','\pm120°','180°'})
+title 'Hand: Stroke patient'
+erp_leg({'\pm60°','\pm120°'}) 
+
+subplot(3,3,4)
+plot(ep_time,mean(dat_erp_60_h(idx_old,:)))
+hold on
+plot(ep_time,mean(dat_erp_120_h(idx_old,:)))
+
+title 'Hand: Old subjects'
+erp_leg({'\pm60°','\pm120°'}) 
+
+subplot(3,3,7)
+plot(ep_time,mean(dat_erp_60_h(idx_young,:)))
+hold on
+plot(ep_time,mean(dat_erp_120_h(idx_young,:)))
+
+title 'Hand: Young subjects'
+erp_leg({'\pm60°','\pm120°'}) 
 
 
-subplot(3,2,3)
-plot(ep_time,mean(dat_erp_0(idx_old,:)))
-hold on
-plot(ep_time,mean(dat_erp_60(idx_old,:)))
-hold on
-plot(ep_time,mean(dat_erp_120(idx_old,:)))
-hold on
-plot(ep_time,mean(dat_erp_180(idx_old,:)))
 
-title 'Old subjects'
-erp_leg({'0°','\pm60°','\pm120°','180°'})
+%degree feet
+subplot(3,3,2)
+plot(ep_time,mean(dat_erp_60_f(idx_stroke,:)))
+hold on
+plot(ep_time,mean(dat_erp_120_f(idx_stroke,:)))
 
-subplot(3,2,5)
-plot(ep_time,mean(dat_erp_0(idx_young,:)))
-hold on
-plot(ep_time,mean(dat_erp_60(idx_young,:)))
-hold on
-plot(ep_time,mean(dat_erp_120(idx_young,:)))
-hold on
-plot(ep_time,mean(dat_erp_180(idx_young,:)))
+title 'Feet: Stroke patient'
+erp_leg({'\pm60°','\pm120°'}) 
 
-title ' Young subjects'
-erp_leg({'0°','\pm60°','\pm120°','180°'})
+subplot(3,3,5)
+plot(ep_time,mean(dat_erp_60_f(idx_old,:)))
+hold on
+plot(ep_time,mean(dat_erp_120_f(idx_old,:)))
+
+title 'Feet: Old subjects'
+erp_leg({'\pm60°','\pm120°'}) 
+
+subplot(3,3,8)
+plot(ep_time,mean(dat_erp_60_f(idx_young,:)))
+hold on
+plot(ep_time,mean(dat_erp_120_f(idx_young,:)))
+
+title 'Feet: Young subjects'
+erp_leg({'\pm60°','\pm120°'}) 
+
 
 
 %Hands
-subplot(3,2,2)
+subplot(3,3,3)
 plot(ep_time,mean(dat_erp_lh(idx_stroke,:)))
 hold on
 plot(ep_time,mean(dat_erp_rh(idx_stroke,:)))
@@ -386,7 +424,7 @@ plot(ep_time,mean(dat_erp_rf(idx_stroke,:)))
 title 'Stroke patient'
 erp_leg({'LH','RH','LF','RF'})
 
-subplot(3,2,4)
+subplot(3,3,6)
 plot(ep_time,mean(dat_erp_lh(idx_old,:)))
 hold on
 plot(ep_time,mean(dat_erp_rh(idx_old,:)))
@@ -398,7 +436,7 @@ plot(ep_time,mean(dat_erp_rf(idx_old,:)))
 title 'Old subjects'
 erp_leg({'LH','RH','LF','RF'})
 
-subplot(3,2,6)
+subplot(3,3,9)
 plot(ep_time,mean(dat_erp_lh(idx_young,:)))
 hold on
 plot(ep_time,mean(dat_erp_rh(idx_young,:)))
@@ -414,7 +452,7 @@ erp_leg({'LH','RH','LF','RF'})
 sgtitle 'Pz'
 
 
-save_fig(gcf,PATHOUT_plots,'rep_yan12_fig4_Pz','FigSize',[0 0 25 20]);
+save_fig(gcf,PATHOUT_plots,'rep_yan12_fig4_Pz','FigSize',[0 0 30 25]);
 
 
 

@@ -76,7 +76,7 @@ chanlocs = readlocs([MAIN '99_software\mobile24_proper_labels.elp']);
 dat_lat = [];
 dat_med = [];
 
-for s = 1:numel(SUBJ)
+for s = 48%1:numel(SUBJ)
     
     % laod wvlt data
     load([PATHIN_WVLT nms_SUBJ{s}]);
@@ -87,8 +87,12 @@ for s = 1:numel(SUBJ)
 
     %normalize trial data 
     tmp_dat     = dat_wvlt.powspctrm;  % -> size powspctrm [96 x 24 x 35 x 2000]
-    tmp_bl      = squeeze(mean(tmp_dat(:,:,:,idx_bl),4));
+    tmp_bl      = squeeze(nanmean(tmp_dat(:,:,:,idx_bl),4));
     tmp_dat_dB  = 10*log10(tmp_dat./tmp_bl); %transform to dB // dB = 10*log10 (signal/baseline)
+    plot(ep_time,squeeze(tmp_dat(:,13,8,:)),'LineWidth',0.3)
+    hold on
+    plot(ep_time,squeeze(mean(tmp_dat_dB(:,13,8,:))),'-k','LineWidth',2)
+    vline([-500 -200],'--k');
 
     % grab relevant RT data form RT_ALL
     % experimental stimuli as in ana04_indv_wavelets
