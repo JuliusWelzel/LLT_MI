@@ -12,6 +12,7 @@
 
 PATHIN_RTs  = [MAIN '02_data\03_RTs\'];
 PATHIN_WVLT = [MAIN '02_data\04_wavelets\'];
+PATHOUT_WVLT_plots = [MAIN '02_data\04_wavelets\TF_plots\'];
 
 PATHOUT_YAN = [MAIN '02_data\05_yan2012\'];
 PATHOUT_plots = [MAIN '02_data\05_yan2012\plots\'];
@@ -44,6 +45,19 @@ groups(1).idx = idx_stroke;
 groups(2).idx = idx_old;
 groups(3).idx = idx_young;
 
+% timing information
+load([PATHIN_WVLT 'cfg.mat'])
+
+% get time epcoh data and indices for time period
+ep_time     = cfg_el.times;
+idx_bl      = ep_time >= -500 & ep_time <= -100;
+idx_beg     = ep_time >= 0 & ep_time <= 300;
+idx_mdl     = ep_time >= 300 & ep_time <= 800;
+idx_end     = ep_time >= 800 & ep_time <= 2500;
+
+nms_time_period = {'BL [-500:-200ms]','BEG [0:300ms]','MDL [300:800ms]','END [800:2500ms]'};
+map_limits = [-8 8];
+
 
 %% CONNY ERD STATS
 % Könntest du für die TF-Maps Differenz-Plots machen: medial-lateral jeweils 
@@ -59,49 +73,164 @@ load([PATHOUT_YAN 'ERD_latmed.mat']); %subj x chan x  t_period [56 x 24 x 4 (BL,
 dat_lat_alpha(dat_lat_alpha == 0) = NaN;
 dat_med_alpha(dat_med_alpha == 0) = NaN;
 %%
+
+%---------------------- Per group Med vs. Lat ----------------------
+
+%Alpha
+vals_map_lim = [-1 1];
+
 close all
 figure
 
-%%%%%%%%%%%%%%%%%%%%%% Lateral %%%%%%%%%%%%%%%%%%%%%%
-subplot(2,3,1)
-[h p ci tstat] = ttest2(dat_lat_alpha(idx_old,:,3),dat_lat_alpha(idx_young,:,3));
-topoplot(tstat.tstat,chanlocs)
-put_CB('t-value')
-title 'old vs. young (lateral)'
+for t = 1:numel(nms_time_period)
+    
+    %prep data
+    dat_diff_old = nanmean(dat_lat_alpha(idx_old,:,t)-dat_med_alpha(idx_old,:,t));
+    [h_old p_old] = ttest(dat_lat_alpha(idx_old,:,t),dat_med_alpha(idx_old,:,t));
+    dat_diff_young = nanmean(dat_lat_alpha(idx_young,:,t)-dat_med_alpha(idx_young,:,t));
+    [h_young p_young] = ttest(dat_lat_alpha(idx_young,:,t),dat_med_alpha(idx_young,:,t));
+    dat_diff_stroke = nanmean(dat_lat_alpha(idx_stroke,:,t)-dat_med_alpha(idx_stroke,:,t));
+    [h_stroke p_stroke] = ttest(dat_lat_alpha(idx_stroke,:,t),dat_med_alpha(idx_stroke,:,t));
+    
+        
+    subplot(3,4,0+t)
+    topoplot(dat_diff_old,chanlocs,'electrodes','off','emarker2',{find(h_old),'.','k'},'maplimits',vals_map_lim)
+        title (['O: ' nms_time_period{t}])    
+    subplot(3,4,4+t)
+    topoplot(dat_diff_young,chanlocs,'electrodes','off','emarker2',{find(h_young),'.','k'},'maplimits',vals_map_lim)
+        title (['Y: ' nms_time_period{t}])    
+    subplot(3,4,8+t)
+    topoplot(dat_diff_stroke,chanlocs,'electrodes','off','emarker2',{find(h_stroke),'.','k'},'maplimits',vals_map_lim)
+        title (['S: ' nms_time_period{t}])    
+    
+end
 
-subplot(2,3,2)
-[h p ci tstat] = ttest2(dat_lat_alpha(idx_old,:,3),dat_lat_alpha(idx_stroke,:,3));
-topoplot(tstat.tstat,chanlocs)
-put_CB('t-value')
-title 'old vs. stroke (lateral)'
+sgtitle 'ERD [8-12 Hz] differences medial-lateral'
+save_fig(gcf,PATHOUT_WVLT_plots,'ERD_dif_grp_alpha','FigSize',[0 0 30 25]);
 
-subplot(2,3,3)
-[h p ci tstat] = ttest2(dat_lat_alpha(idx_stroke,:,3),dat_lat_alpha(idx_young,:,3));
-topoplot(tstat.tstat,chanlocs)
-put_CB('t-value')
-title 'stroke vs. young (lateral)'
+% beta
+vals_map_lim = [-1 1];
 
-%%%%%%%%%%%%%%%%%%%%%% medial %%%%%%%%%%%%%%%%%%%%%%
-subplot(2,3,4)
-[h p ci tstat] = ttest2(dat_med_alpha(idx_old,:,3),dat_med_alpha(idx_young,:,3));
-topoplot(tstat.tstat,chanlocs)
-put_CB('t-value')
-title 'old vs. young (medial)'
+close all
+figure
 
-subplot(2,3,5)
-[h p ci tstat] = ttest2(dat_med_alpha(idx_old,:,3),dat_med_alpha(idx_stroke,:,3));
-topoplot(tstat.tstat,chanlocs)
-put_CB('t-value')
-title 'old vs. stroke (medial)'
+for t = 1:numel(nms_time_period)
+    
+    %prep data
+    dat_diff_old = nanmean(dat_lat_beta(idx_old,:,t)-dat_med_beta(idx_old,:,t));
+    [h_old p_old] = ttest(dat_lat_beta(idx_old,:,t),dat_med_beta(idx_old,:,t));
+    dat_diff_young = nanmean(dat_lat_beta(idx_young,:,t)-dat_med_beta(idx_young,:,t));
+    [h_young p_young] = ttest(dat_lat_beta(idx_young,:,t),dat_med_beta(idx_young,:,t));
+    dat_diff_stroke = nanmean(dat_lat_beta(idx_stroke,:,t)-dat_med_beta(idx_stroke,:,t));
+    [h_stroke p_stroke] = ttest(dat_lat_beta(idx_stroke,:,t),dat_med_beta(idx_stroke,:,t));
+    
+        
+    subplot(3,4,0+t)
+    topoplot(dat_diff_old,chanlocs,'electrodes','off','emarker2',{find(h_old),'.','k'},'maplimits',vals_map_lim)
+        title (['O: ' nms_time_period{t}])    
+    subplot(3,4,4+t)
+    topoplot(dat_diff_young,chanlocs,'electrodes','off','emarker2',{find(h_young),'.','k'},'maplimits',vals_map_lim)
+        title (['Y: ' nms_time_period{t}])    
+    subplot(3,4,8+t)
+    topoplot(dat_diff_stroke,chanlocs,'electrodes','off','emarker2',{find(h_stroke),'.','k'},'maplimits',vals_map_lim)
+        title (['S: ' nms_time_period{t}])    
+    
+end
 
-subplot(2,3,6)
-[h p ci tstat] = ttest2(dat_med_alpha(idx_stroke,:,3),dat_med_alpha(idx_young,:,3));
-topoplot(tstat.tstat,chanlocs)
-put_CB('t-value')
-title 'stroke vs. young (medial)'
+sgtitle 'ERD [15-25 Hz] differences medial-lateral'
+save_fig(gcf,PATHOUT_WVLT_plots,'ERD_dif_grp_beta','FigSize',[0 0 30 25]);
 
-sgtitle 't-values ERD [8-12 Hz] at 300-800 ms'
-save_fig(gcf,PATHOUT_plots,'ERD_t_vals','FigSize',[0 0 30 20]);
+
+%% ---------------------- Per Con group compare ----------------------
+
+%Alpha
+vals_map_lim = [-3 3];
+
+close all
+figure
+
+for t = 1:numel(nms_time_period)
+    
+    %prep data
+    dat_diff_lat_oy = nanmean(dat_lat_alpha(idx_old,:,t))-nanmean(dat_lat_alpha(idx_young,:,t));
+    [h_lat_oy p_lat_oy] = ttest2(dat_lat_alpha(idx_old,:,t),dat_lat_alpha(idx_young,:,t));
+    dat_diff_med_oy = nanmean(dat_med_alpha(idx_old,:,t))-nanmean(dat_med_alpha(idx_young,:,t));
+    [h_med_oy p_med_oy] = ttest2(dat_med_alpha(idx_old,:,t),dat_med_alpha(idx_young,:,t));
+
+    dat_diff_lat_os = nanmean(dat_lat_alpha(idx_old,:,t))-nanmean(dat_lat_alpha(idx_stroke,:,t));
+    [h_lat_os p_lat_os] = ttest2(dat_lat_alpha(idx_old,:,t),dat_lat_alpha(idx_stroke,:,t));
+    dat_diff_med_os = nanmean(dat_med_alpha(idx_old,:,t))-nanmean(dat_med_alpha(idx_stroke,:,t));
+    [h_med_os p_med_os] = ttest2(dat_med_alpha(idx_old,:,t),dat_med_alpha(idx_stroke,:,t));
+
+        
+    subplot(4,4,0+t)
+    topoplot(dat_diff_lat_oy,chanlocs,'electrodes','off','emarker2',{find(h_lat_oy),'.','k'},'maplimits',vals_map_lim)
+        title (['LAT_{o-y}: ' nms_time_period{t}])    
+    subplot(4,4,4+t)
+    topoplot(dat_diff_lat_os,chanlocs,'electrodes','off','emarker2',{find(h_lat_os),'.','k'},'maplimits',vals_map_lim)
+        title (['LAT_{o-s}: ' nms_time_period{t}])    
+    subplot(4,4,8+t)
+    topoplot(dat_diff_med_oy,chanlocs,'electrodes','off','emarker2',{find(h_med_oy),'.','k'},'maplimits',vals_map_lim)
+        title (['MED_{o-y}: ' nms_time_period{t}])  
+    subplot(4,4,12+t)
+    topoplot(dat_diff_med_os,chanlocs,'electrodes','off','emarker2',{find(h_med_os),'.','k'},'maplimits',vals_map_lim)
+        title (['MED_{o-s}: ' nms_time_period{t}])    
+
+    
+end
+
+sgtitle 'ERD [8-12 Hz] differences group'
+save_fig(gcf,PATHOUT_WVLT_plots,'ERD_dif_con_alpha','FigSize',[0 0 30 35]);
+
+%beta
+
+close all
+figure
+
+for t = 1:numel(nms_time_period)
+    
+    %prep data
+    dat_diff_lat_oy = nanmean(dat_lat_beta(idx_old,:,t))-nanmean(dat_lat_beta(idx_young,:,t));
+    [h_lat_oy p_lat_oy] = ttest2(dat_lat_beta(idx_old,:,t),dat_lat_beta(idx_young,:,t));
+    dat_diff_med_oy = nanmean(dat_med_beta(idx_old,:,t))-nanmean(dat_med_beta(idx_young,:,t));
+    [h_med_oy p_med_oy] = ttest2(dat_med_beta(idx_old,:,t),dat_med_beta(idx_young,:,t));
+
+    dat_diff_lat_os = nanmean(dat_lat_beta(idx_old,:,t))-nanmean(dat_lat_beta(idx_stroke,:,t));
+    [h_lat_os p_lat_os] = ttest2(dat_lat_beta(idx_old,:,t),dat_lat_beta(idx_stroke,:,t));
+    dat_diff_med_os = nanmean(dat_med_beta(idx_old,:,t))-nanmean(dat_med_beta(idx_stroke,:,t));
+    [h_med_os p_med_os] = ttest2(dat_med_beta(idx_old,:,t),dat_med_beta(idx_stroke,:,t));
+
+        
+    subplot(4,4,0+t)
+    topoplot(dat_diff_lat_oy,chanlocs,'electrodes','off','emarker2',{find(h_lat_oy),'.','k'},'maplimits',vals_map_lim)
+        title (['LAT_{o-y}: ' nms_time_period{t}])    
+    subplot(4,4,4+t)
+    topoplot(dat_diff_lat_os,chanlocs,'electrodes','off','emarker2',{find(h_lat_os),'.','k'},'maplimits',vals_map_lim)
+        title (['LAT_{o-s}: ' nms_time_period{t}])    
+    subplot(4,4,8+t)
+    topoplot(dat_diff_med_oy,chanlocs,'electrodes','off','emarker2',{find(h_med_oy),'.','k'},'maplimits',vals_map_lim)
+        title (['MED_{o-y}: ' nms_time_period{t}])  
+    subplot(4,4,12+t)
+    topoplot(dat_diff_med_os,chanlocs,'electrodes','off','emarker2',{find(h_med_os),'.','k'},'maplimits',vals_map_lim)
+        title (['MED_{o-s}: ' nms_time_period{t}])    
+
+    
+end
+
+sgtitle 'ERD [15-25 Hz] differences group'
+save_fig(gcf,PATHOUT_WVLT_plots,'ERD_dif_con_beta','FigSize',[0 0 30 35]);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
