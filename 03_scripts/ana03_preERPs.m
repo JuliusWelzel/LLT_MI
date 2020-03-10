@@ -16,8 +16,8 @@ load 'cfg.mat'
 cfg.ERP.LP = 20;
 cfg.ERP.HP = 0.1;
 cfg.ERP.PRUNE = 3;
-cfg.ERP.resam = 100;
-cfg.ERP.ep_time = [-0.7 1.3];
+cfg.ERP.resam = 250;
+cfg.ERP.ep_time = [-1 10];
 cfg.ERP.BL = [-500 -100];
 
 iclab_nms = {'finICA'};
