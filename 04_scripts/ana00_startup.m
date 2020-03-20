@@ -17,17 +17,18 @@ addpath(genpath(MAIN));
 
 
 % add toolboxes to path 
-addpath('D:\Projekt_Welzel\toolboxes\eeglab2019_0');
+path_toolboxes = 'E:\projects\toolboxes\';
+addpath([path_toolboxes 'eeglab2019_0']);
 eeglab;close all;
-addpath('D:\Projekt_Welzel\toolboxes\fieldtrip-20191111');
-addpath('D:\Projekt_Welzel\toolboxes\BCILAB-devel');
-
+addpath([path_toolboxes 'fieldtrip-20191111']);
 
 %Change MatLab defaults
 set(0,'defaultfigurecolor',[1 1 1]);
 
 c_rh = [39,93,59]/255;
 c_lh = [117,196,107]/255;
+c_rf = c_rh * 1.5;
+c_lf = c_lh * 1.3;
 
 c_stroke    = [104,93,121]/255;
 c_old       = [171,108,130]/255;

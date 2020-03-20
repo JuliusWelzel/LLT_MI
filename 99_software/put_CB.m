@@ -1,7 +1,6 @@
-function put_CB(label)
+function put_CB
     % use for plotting
    c = colorbar;
-   c.Label.String = label;
-   c.Limits = [-3.5 3.5];
+   c.Label.String = 'Power [dB]';
    
 end

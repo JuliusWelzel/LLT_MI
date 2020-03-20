@@ -208,7 +208,7 @@ for p = 1:numel(nms_time_period)
     subplot(3,4,p)
     topoplot(mean(dat_lh_alpha(idx_stroke,:,i)),chanlocs,'maplimits',map_limits);
     title (['S: ' nms_time_period{i}])
-    put_CB % function changed
+    put_CB
     
     subplot(3,4,p+4)
     topoplot(mean(dat_lh_alpha(idx_old,:,i),1),chanlocs,'maplimits',map_limits);
@@ -412,49 +412,4 @@ end
 
 sgtitle 'Figure 6. Time-course \beta-ERD medial'
 save_fig(gcf,PATHOUT_plots,'ERD_timecourse_beta_medial','FigSize',[0 0 30 20]);
-
-
-
-
-%% CONNY ERD STATS
-% Könntest du für die TF-Maps Differenz-Plots machen: medial-lateral jeweils 
-% für jede Gruppe und Alt-Jung bzw. Alt-Stroke jeweils für medial und lateral getrennt? 
-% Mann könnte die einzelnen Elektroden-Positionen auch gleich noch pasierend auf 
-% p-Werten markieren (dafür müsste man jeweils einen T-Test für unabhängige oder 
-% abhängige Stichproben pro Kanal rechnen und dann könnte man zB jeden Kanal ja 
-% nach p-Wert farblich markieren oder in der Größe variiren. Man kann p-WErte natürlich auch mappen). 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

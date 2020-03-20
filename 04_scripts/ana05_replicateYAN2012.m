@@ -14,8 +14,8 @@ PATHIN_ERP  = [MAIN '02_data\03_ERPs\'];
 PATHIN_RTs  = [MAIN '02_data\03_RTs\'];
 PATHIN_WVLT = [MAIN '02_data\04_wavelets'];
 
-PATHOUT_YAN = [MAIN '02_data\05_yan2012\'];
-PATHOUT_plots = [MAIN '02_data\05_yan2012\plots\'];
+PATHOUT_YAN = [MAIN '02_data\ana05_yan2012\'];
+PATHOUT_plots = [MAIN '03_plots\ana05_yan2012\plots\'];
 
 %Check if PATHOUT-folder is already there; if not: create
 if ~isdir(PATHOUT_YAN)
