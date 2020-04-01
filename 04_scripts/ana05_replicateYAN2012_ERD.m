@@ -11,15 +11,15 @@
 
 
 PATHIN_RTs  = [MAIN '02_data\03_RTs\'];
-PATHIN_WVLT = [MAIN '02_data\04_wavelets\'];
+PATHIN_WVLT = [MAIN '02_data\ana04_wavelets\'];
 
-PATHOUT_YAN = [MAIN '02_data\05_yan2012\'];
-PATHOUT_plots = [MAIN '02_data\05_yan2012\plots\'];
+PATHOUT_YAN = [MAIN '02_data\ana05_yan2012\'];
+PATHOUT_YAN_plots = [MAIN '03_plots\05_yan2012\'];
 
 %Check if PATHOUT-folder is already there; if not: create
 if ~isdir(PATHOUT_YAN)
     mkdir(PATHOUT_YAN);
-    mkdir(PATHOUT_plots);
+    mkdir(PATHOUT_YAN_plots);
 end
 
 %% Gather all available datacfg_elts with clean EEG data
@@ -36,29 +36,21 @@ idx_stroke  = SUBJ < 30;
 % groups vars for plotting
 g_nms   = {'stroke','old','young'}; 
 
-for i = 1:length(g_nms)
-    groups(i).names = g_nms{i};
-end
-
-groups(1).idx = idx_stroke;
-groups(2).idx = idx_old;
-groups(3).idx = idx_young;
-
 
 %% replicate figure 6 
 
 load([PATHIN_WVLT 'cfg.mat'])
 
 % get time epcoh data and indices for time period
-ep_time     = cfg_el.times;
+ep_time     = cfg_wvlt.times;
 idx_bl      = ep_time >= -500 & ep_time <= -100;
 idx_beg     = ep_time >= 0 & ep_time <= 300;
 idx_mdl     = ep_time >= 300 & ep_time <= 800;
 idx_end     = ep_time >= 800 & ep_time <= 2500;
 
 % indeices for freq band
-idx_aplha   = cfg_el.freqs >= 8 & cfg_el.freqs <= 12;
-idx_beta    = cfg_el.freqs >= 15 & cfg_el.freqs <= 25;
+idx_aplha   = cfg_wvlt.freqs >= 8 & cfg_wvlt.freqs <= 12;
+idx_beta    = cfg_wvlt.freqs >= 15 & cfg_wvlt.freqs <= 25;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -72,27 +64,24 @@ load([PATHIN_RTs 'RT_ALL.mat']);
 chanlocs = readlocs([MAIN '99_software\mobile24_proper_labels.elp']);
 
 % for ERD analysis
-dat_lh_alpha    = []; %sub x chan x t_period [56 x 24 x 4 (BL,BEG,MID,END)]
-dat_rh_alpha    = [];
-dat_lh_beta     = [];
-dat_rh_beta     = [];
+% laterality
+dat_lat_alpha    = []; %sub x chan x t_period [56 x 24 x 4 (BL,BEG,MID,END)]
+dat_med_alpha    = [];
+dat_lat_beta     = [];
+dat_med_beta     = [];
 
-% for RT vs ERD analysis
-dat_RTERD_alpha     = []; %sub x t_period x con [56 x 4 (BL,BEG,MID,END) x 2 (RT, ERD)]
-dat_RTERD_beta      = [];
+%performance
+dat_cor_alpha    = []; %sub x chan x t_period [56 x 24 x 2 (TRIAL(30ms:SO),b-REB(SO:SO+1))]
+dat_err_alpha    = [];
+dat_cor_beta     = [];
+dat_err_beta     = [];
 
 
 for s = 1:numel(SUBJ)
     
-    % laod wvlt data
-    load([PATHIN_WVLT nms_SUBJ{s}]);
+    % laod wvlt data    
     display (['Working on Subject ' num2str(SUBJ(s))])
-    
-    %normalize trial data 
-    tmp_dat     = dat_wvlt.powspctrm;  % -> size powspctrm [96 x 24 x 35 x 2000]
-    tmp_bl      = squeeze(mean(tmp_dat(:,:,:,idx_bl),4));
-    tmp_dat_dB  = 10*log10(tmp_dat./tmp_bl); %transform to dB // dB = 10*log10 (signal/baseline)
-
+    load([PATHIN_WVLT nms_SUBJ{s}]);
 
     % grab relevant RT data form RT_ALL
     % experimental stimuli as in ana04_indv_wavelets
@@ -111,32 +100,6 @@ for s = 1:numel(SUBJ)
     idx_rh      = contains(dat_wvlt.events(:,1),'rh');
         
     
-    %% HANDINESS
-    % create 3D matrix -> sub x chan x t_period [56 x 24 x 4 (BL,BEG,MID,END)]
-    % alpha_lh all time periods
-    dat_lh_alpha(s,:,1)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_lh',:,idx_aplha,idx_bl),4),3))); %-> size powspctrm [96 x 24 x 35 x 2000]
-    dat_lh_alpha(s,:,2)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_lh',:,idx_aplha,idx_beg),4),3)));
-    dat_lh_alpha(s,:,3)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_lh',:,idx_aplha,idx_mdl),4),3))); 
-    dat_lh_alpha(s,:,4)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_lh',:,idx_aplha,idx_end),4),3))); 
-   
-    % alpha_rh all time periods
-    dat_rh_alpha(s,:,1)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_rh',:,idx_aplha,idx_bl),4),3))); %-> size powspctrm [96 x 24 x 35 x 2000]
-    dat_rh_alpha(s,:,2)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_rh',:,idx_aplha,idx_beg),4),3)));
-    dat_rh_alpha(s,:,3)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_rh',:,idx_aplha,idx_mdl),4),3))); 
-    dat_rh_alpha(s,:,4)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_rh',:,idx_aplha,idx_end),4),3))); 
-
-    % beta_lh all time periods
-    dat_lh_beta(s,:,1)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_lh',:,idx_beta,idx_bl),4),3))); %-> size powspctrm [96 x 24 x 35 x 2000]
-    dat_lh_beta(s,:,2)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_lh',:,idx_beta,idx_beg),4),3)));
-    dat_lh_beta(s,:,3)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_lh',:,idx_beta,idx_mdl),4),3))); 
-    dat_lh_beta(s,:,4)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_lh',:,idx_beta,idx_end),4),3))); 
-
-    % alpha_rh all time periods
-    dat_rh_beta(s,:,1)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_lh',:,idx_beta,idx_bl),4),3))); %-> size powspctrm [96 x 24 x 35 x 2000]
-    dat_rh_beta(s,:,2)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_lh',:,idx_beta,idx_beg),4),3)));
-    dat_rh_beta(s,:,3)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_lh',:,idx_beta,idx_mdl),4),3))); 
-    dat_rh_beta(s,:,4)    = squeeze(mean(mean(mean(tmp_dat_dB(idx_cor & idx_lh',:,idx_beta,idx_end),4),3))); 
-
     
     %% LATERALITY
     % create 3D matrix -> sub x chan x t_period [56 x 24 x 4 (BL,BEG,MID,END)]
@@ -224,7 +187,7 @@ for p = 1:numel(nms_time_period)
 end
 
 sgtitle 'Figure 6. Time-course \alpha-ERD LH'
-save_fig(gcf,PATHOUT_plots,'ERD_timecourse_alpha_LH','FigSize',[0 0 30 20]);
+save_fig(gcf,PATHOUT_YAN_plots,'ERD_timecourse_alpha_LH','FigSize',[0 0 30 20]);
 
 %RH alpha
 figure
@@ -250,7 +213,7 @@ for p = 1:numel(nms_time_period)
 end
 
 sgtitle 'Figure 6. Time-course \alpha-ERD RH'
-save_fig(gcf,PATHOUT_plots,'ERD_timecourse_alpha_RH','FigSize',[0 0 30 20]);
+save_fig(gcf,PATHOUT_YAN_plots,'ERD_timecourse_alpha_RH','FigSize',[0 0 30 20]);
 
 % LH beta
 figure
@@ -276,7 +239,7 @@ for p = 1:numel(nms_time_period)
 end
 
 sgtitle 'Figure 6. Time-course \beta-ERD LH'
-save_fig(gcf,PATHOUT_plots,'ERD_timecourse_beta_LH','FigSize',[0 0 30 20]);
+save_fig(gcf,PATHOUT_YAN_plots,'ERD_timecourse_beta_LH','FigSize',[0 0 30 20]);
 
 %RH alpha
 figure
@@ -302,7 +265,7 @@ for p = 1:numel(nms_time_period)
 end
 
 sgtitle 'Figure 6. Time-course \beta-ERD RH'
-save_fig(gcf,PATHOUT_plots,'ERD_timecourse_beta_RH','FigSize',[0 0 30 20]);
+save_fig(gcf,PATHOUT_YAN_plots,'ERD_timecourse_beta_RH','FigSize',[0 0 30 20]);
 
 
 %% plot time course for lateral/ medial
@@ -333,7 +296,7 @@ for p = 1:numel(nms_time_period)
 end
 
 sgtitle 'Figure 6. Time-course \alpha-ERD lateral'
-save_fig(gcf,PATHOUT_plots,'ERD_timecourse_alpha_lateral','FigSize',[0 0 30 20]);
+save_fig(gcf,PATHOUT_YAN_plots,'ERD_timecourse_alpha_lateral','FigSize',[0 0 30 20]);
 
 %medial alpha
 figure
@@ -359,7 +322,7 @@ for p = 1:numel(nms_time_period)
 end
 
 sgtitle 'Figure 6. Time-course \alpha-ERD medial'
-save_fig(gcf,PATHOUT_plots,'ERD_timecourse_alpha_medial','FigSize',[0 0 30 20]);
+save_fig(gcf,PATHOUT_YAN_plots,'ERD_timecourse_alpha_medial','FigSize',[0 0 30 20]);
 
 % lateral beta
 figure
@@ -385,7 +348,7 @@ for p = 1:numel(nms_time_period)
 end
 
 sgtitle 'Figure 6. Time-course \beta-ERD lateral'
-save_fig(gcf,PATHOUT_plots,'ERD_timecourse_beta_lateral','FigSize',[0 0 30 20]);
+save_fig(gcf,PATHOUT_YAN_plots,'ERD_timecourse_beta_lateral','FigSize',[0 0 30 20]);
 
 %RH alpha
 figure
@@ -411,5 +374,5 @@ for p = 1:numel(nms_time_period)
 end
 
 sgtitle 'Figure 6. Time-course \beta-ERD medial'
-save_fig(gcf,PATHOUT_plots,'ERD_timecourse_beta_medial','FigSize',[0 0 30 20]);
+save_fig(gcf,PATHOUT_YAN_plots,'ERD_timecourse_beta_medial','FigSize',[0 0 30 20]);
 

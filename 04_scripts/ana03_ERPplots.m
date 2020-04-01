@@ -66,15 +66,15 @@ for s = 1:length(ERP_all)
     idx_id_300    = contains(ep_stim(:,3),'300') & idx_best; 
     
     % store single subject ERPs
-    dat_lat(s,:) = squeeze(mean(ERP_all(s).mERP(idx_Pz,:,idx_lat),3));
-    dat_med(s,:) = squeeze(mean(ERP_all(s).mERP(idx_Pz,:,idx_med),3));
+    dat_lat(s,:) = squeeze(mean(ERP_all(s).mERP(idx_Pz,:,idx_lat & idx_hand),3));
+    dat_med(s,:) = squeeze(mean(ERP_all(s).mERP(idx_Pz,:,idx_med & idx_hand),3));
     
     dat_hand(s,:) = squeeze(mean(ERP_all(s).mERP(idx_Pz,:,idx_hand),3));
     dat_foot(s,:) = squeeze(mean(ERP_all(s).mERP(idx_Pz,:,idx_foot),3));
 
-    dat_id_0(s,:) = squeeze(mean(ERP_all(s).mERP(idx_Pz,:,idx_id_0),3));
-    dat_id_60(s,:) = squeeze(mean(ERP_all(s).mERP(idx_Pz,:,idx_id_60),3));
-    dat_id_300(s,:) = squeeze(mean(ERP_all(s).mERP(idx_Pz,:,idx_id_300),3));
+    dat_id_0(s,:) = squeeze(mean(ERP_all(s).mERP(idx_Pz,:,idx_id_0 & idx_hand),3));
+    dat_id_60(s,:) = squeeze(mean(ERP_all(s).mERP(idx_Pz,:,idx_id_60 & idx_hand),3));
+    dat_id_300(s,:) = squeeze(mean(ERP_all(s).mERP(idx_Pz,:,idx_id_300 & idx_hand),3));
 
 
 end %SUBJ loop
@@ -141,69 +141,11 @@ plot(ep_time,mean(dat_med(idx_stroke,:)),'Color',c_med)
     ax.YAxisLocation = 'origin';
     box off;
     title 'STROKE'
-
-    
-%%%%%%%%%%%%%%%%%%%%%% plot hand_feet  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-subplot(3,3,2)
-plot(ep_time,mean(dat_hand(idx_old,:)),'Color',c_lh)
-hold on
-plot(ep_time,mean(dat_foot(idx_old,:)),'Color',c_rh)
-    legend ({'hand','foot'})
-    legend('boxoff')
-    xlabel 'time [ms]'
-    ylabel 'amplitude [\muV]'
-    xlim ([-300 1200])
-    ylim ([-20 20])
-
-
-    % Add all our previous improvements:
-    ax = gca();
-    ax.XAxisLocation = 'origin';
-    ax.YAxisLocation = 'origin';
-    box off;
-    title 'OLD'
-
-subplot(3,3,5)
-plot(ep_time,mean(dat_hand(idx_young,:)),'Color',c_lh)
-hold on
-plot(ep_time,mean(dat_foot(idx_young,:)),'Color',c_rh)
-    legend ({'hand','foot'})
-    legend('boxoff')
-    xlabel 'time [ms]'
-    ylabel 'amplitude [\muV]'
-    xlim ([-300 1200])
-    ylim ([-20 20])
-
-
-    % Add all our previous improvements:
-    ax = gca();
-    ax.XAxisLocation = 'origin';
-    ax.YAxisLocation = 'origin';
-    box off;
-    title 'YOUNG'
-
-subplot(3,3,8)
-plot(ep_time,mean(dat_hand(idx_stroke,:)),'Color',c_lh)
-hold on
-plot(ep_time,mean(dat_foot(idx_stroke,:)),'Color',c_rh)
-    legend ({'hand','foot'})
-    legend('boxoff')
-    xlabel 'time [ms]'
-    ylabel 'amplitude [\muV]'
-    xlim ([-300 1200])
-    ylim ([-20 20])
-
-    % Add all our previous improvements:
-    ax = gca();
-    ax.XAxisLocation = 'origin';
-    ax.YAxisLocation = 'origin';
-    box off;
-    title 'STROKE'   
     
     
     
 %%%%%%%%%%%%%%%%%%%%%% plot in depth rotation  %%%%%%%%%%%%%%%%%%%%%%%%%%%
-subplot(3,3,3)
+subplot(3,3,2)
 plot(ep_time,mean(dat_id_0(idx_old,:)),'Color',c_young)
 hold on
 plot(ep_time,mean(dat_id_60(idx_old,:)),'Color',c_old)
@@ -224,7 +166,7 @@ plot(ep_time,mean(dat_id_300(idx_old,:)),'Color',c_stroke)
     box off;
     title 'OLD'
 
-subplot(3,3,6)
+subplot(3,3,5)
 plot(ep_time,mean(dat_id_0(idx_young,:)),'Color',c_young)
 hold on
 plot(ep_time,mean(dat_id_60(idx_young,:)),'Color',c_old)
@@ -244,7 +186,7 @@ plot(ep_time,mean(dat_id_300(idx_young,:)),'Color',c_stroke)
     box off;
     title 'YOUNG'
 
-subplot(3,3,9)
+subplot(3,3,8)
 plot(ep_time,mean(dat_id_0(idx_stroke,:)),'Color',c_young)
 hold on
 plot(ep_time,mean(dat_id_60(idx_stroke,:)),'Color',c_old)
@@ -265,8 +207,64 @@ plot(ep_time,mean(dat_id_300(idx_stroke,:)),'Color',c_stroke)
     title 'STROKE' 
     
     
+%%%%%%%%%%%%%%%%%%%%%% plot hand_feet  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+subplot(3,3,3)
+plot(ep_time,mean(dat_hand(idx_old,:)),'Color',c_lh)
+hold on
+plot(ep_time,mean(dat_foot(idx_old,:)),'Color',c_rh)
+    legend ({'hand','foot'})
+    legend('boxoff')
+    xlabel 'time [ms]'
+    ylabel 'amplitude [\muV]'
+    xlim ([-300 1200])
+    ylim ([-20 20])
+
+
+    % Add all our previous improvements:
+    ax = gca();
+    ax.XAxisLocation = 'origin';
+    ax.YAxisLocation = 'origin';
+    box off;
+    title 'OLD'
+
+subplot(3,3,6)
+plot(ep_time,mean(dat_hand(idx_young,:)),'Color',c_lh)
+hold on
+plot(ep_time,mean(dat_foot(idx_young,:)),'Color',c_rh)
+    legend ({'hand','foot'})
+    legend('boxoff')
+    xlabel 'time [ms]'
+    ylabel 'amplitude [\muV]'
+    xlim ([-300 1200])
+    ylim ([-20 20])
+
+
+    % Add all our previous improvements:
+    ax = gca();
+    ax.XAxisLocation = 'origin';
+    ax.YAxisLocation = 'origin';
+    box off;
+    title 'YOUNG'
+
+subplot(3,3,9)
+plot(ep_time,mean(dat_hand(idx_stroke,:)),'Color',c_lh)
+hold on
+plot(ep_time,mean(dat_foot(idx_stroke,:)),'Color',c_rh)
+    legend ({'hand','foot'})
+    legend('boxoff')
+    xlabel 'time [ms]'
+    ylabel 'amplitude [\muV]'
+    xlim ([-300 1200])
+    ylim ([-20 20])
+
+    % Add all our previous improvements:
+    ax = gca();
+    ax.XAxisLocation = 'origin';
+    ax.YAxisLocation = 'origin';
+    box off;
+    title 'STROKE'   
     
-    
+sgtitle 'Pz'
 save_fig(gcf,PATHOUT_plots,['ERP_overview'],'FigSize',[0 0 30 20]);
 
 
