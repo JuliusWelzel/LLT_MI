@@ -58,12 +58,12 @@ for s = 1:length(ERP_all)
     ep_stim = splitLLTstim(ERP_all(s).pics);
     for t = 1:length(ep_stim)
         idx_time_bl_start   = dsearchn(ep_time',cfg.ERP.BL(1));
-        idx_ep_end          = dsearchn(ep_time',ERP_all(s).RT_SO_s(t));
+        idx_ep_end          = dsearchn(ep_time',1500);
         if idx_ep_end == 1;idx_ep_end = dsearchn(ep_time',ep_time(end));end
         idx_art(:,t) = squeeze(max(ERP_all(s).mERP(:,idx_time_bl_start:idx_ep_end,t),[],2))>100 | squeeze(min(ERP_all(s).mERP(:,idx_time_bl_start:idx_ep_end,t),[],2))<-100;
     end
     
-    ERP_all(s).idx_art = idx_art
+    ERP_all(s).idx_art = idx_art;
     idx_art = mean(ERP_all(s).idx_art(idx_ROI,:));
     idx_cor = ERP_all(s).idx_cor' & ~idx_art';
     
@@ -309,7 +309,9 @@ singleBoxplot(dat_art_bp)
 tune_BP([c_stroke;c_old;c_young])
     xticks ([1 2 3])
     xticklabels (nms_group)
-    ylabel 'Number of artefactual epochs [%]'
+    ylabel 'Number of artifactual epochs [%]'
+    
+save_fig(gcf,PATHOUT_plots,'grp_art_eps')
 
 
 
