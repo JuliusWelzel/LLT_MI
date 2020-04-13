@@ -18,7 +18,7 @@ cfg.ERP.LP = 20;
 cfg.ERP.HP = 0.1;
 cfg.ERP.PRUNE = 3;
 cfg.ERP.resam = 100;
-cfg.ERP.ep_time = [-1 4];
+cfg.ERP.ep_time = [-1 3];
 cfg.ERP.BL = [-500 -100];
 
 load([PATHIN_rts 'RT_ALL.mat']);
