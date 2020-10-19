@@ -264,6 +264,31 @@ nms_loc = [nms_mu nms_mu nms_alpha nms_alpha];
 [~,tbl,stats] = anovan(dat_ERD_stat,{nms_group,nms_con,nms_loc})
 multcompare(stats,'Dimension',[1 2 3])
 
+%% Prep for JASP
+dat_JASP = [squeeze(mean(mean(dat_lat(:,idx_ROI_mu,idx_time_erd),2),3));...
+                squeeze(mean(mean(dat_med(:,idx_ROI_mu,idx_time_erd),2),3));...
+                squeeze(mean(mean(dat_lat(:,idx_ROI_alpha,idx_time_erd),2),3));...
+                squeeze(mean(mean(dat_med(:,idx_ROI_alpha,idx_time_erd),2),3))];
+            
+nms_group(idx_stroke)   = string('stroke');
+nms_group(idx_old)      = string('old');
+nms_group(idx_young)    = string('young');
+nms_group = [nms_group nms_group nms_group nms_group];
+
+nms_lat(1:size(dat_lat,1))   = string('lat');
+nms_med(1:size(dat_med,1))   = string('med');
+nms_con = [nms_lat nms_med nms_lat nms_med];
+
+nms_mu(1:size(dat_lat,1))   = string('mu');
+nms_alpha(1:size(dat_lat,1))   = string('alpha');
+nms_loc = [nms_mu nms_mu nms_alpha nms_alpha];
+
+nms_sub = extractBetween(nms_SUBJ,'wvlts_','.mat');
+nms_sub = repmat(nms_sub,1,4)
+
+dat_JASP = table(dat_ERD_stat,nms_group',nms_con',nms_loc',nms_sub','VariableNames',{'ERD','Group','Condition','ROI','ID'});
+dat_JASP_ = unstack(dat_JASP,{'ERD'},'Condition');
+writetable(dat_JASP_,[PATHOUT_dat_wvlt 'dat_JASP.csv'])
 
 %% Plots results for statistic
 c_stroke    = [149,165,166]/255;

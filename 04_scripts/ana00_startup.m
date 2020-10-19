@@ -15,7 +15,7 @@ addpath(genpath(MAIN));
 
 
 % add toolboxes to path 
-path_toolboxes = 'E:\projects\toolboxes\';
+path_toolboxes = 'D:\projects\toolboxes\';
 addpath([path_toolboxes 'eeglab2019_0']);
 eeglab;close all;
 addpath([path_toolboxes 'fieldtrip-20191111']);

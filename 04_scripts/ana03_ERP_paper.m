@@ -208,6 +208,9 @@ xlabel 'mean Amplitude [\muV]'
 save_fig(gcf,PATHOUT_plots,'mltcmpr_hERPs_ANOVA');
 writecell(tbl,[PATHOUT_plots 'tbl_hERPs_ANOVA.xls']);
 
+tmp_tab = struct2table(dat_trial_hERP);
+writetable(tmp_tab,[PATHOUT_plots 'st_hERP.xls']);
+
 
 %% Feet ERPs
 
