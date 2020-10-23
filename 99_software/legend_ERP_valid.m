@@ -1,6 +1,5 @@
-function  legend_ERP_paper
+function  legend_ERP_valid
 
-    legend('boxoff')
     xlabel 'time [ms]'
     ylabel 'amplitude [\muV]'
     xlim ([-300 1200])
@@ -12,4 +11,3 @@ function  legend_ERP_paper
     box off;
     
 end
-
