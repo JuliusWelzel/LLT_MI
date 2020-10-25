@@ -45,6 +45,7 @@ nms_group   = {'stroke','old','young'};
 
 %% Explore ERP dist
 %add relevant indices
+idx_time_P2 = dsearchn(cfg.ep_time',[180]'):dsearchn(cfg.ep_time',[260]');
 idx_time_P3 = dsearchn(cfg.ep_time',[300]'):dsearchn(cfg.ep_time',[600]');
 idx_ROI = ismember({cfg.ERP.chanlocs.labels},{'P3','Pz','P4'});
 
@@ -191,7 +192,7 @@ plot(cfg.ep_time,mean(dat_trial_hERP_s120(idx_stroke,:)),'Color',color.c_rh)
     title 'STROKE'
     legend_ERP_paper
 
-sgtitle (['Hand ERP [450-600 ms] at P3,Pz,P4'])
+sgtitle (['Hand ERP [300-600 ms] at P3,Pz,P4'])
 save_fig(gcf,PATHOUT_plots,'grp_hERPs_ANOVA')
 
 
@@ -249,13 +250,44 @@ plot(cfg.ep_time,mean(dat_trial_fERP_s120(idx_stroke,:)),'Color',color.c_rh)
     title 'STROKE'
     legend_ERP_paper
 
-sgtitle (['Feet ERP [450-600 ms] at P3,Pz,P4'])
+sgtitle (['Feet ERP [300-600 ms] at P3,Pz,P4'])
 save_fig(gcf,PATHOUT_plots,'grp_fERPs_ANOVA')
 
 
 %% Prep data for JASP
-% ANOVA  mean (group [3] x con)
 
+c = 1;
+for s = 1:numel(ERP_all) % Loop over all subjects
+    
+
+    for e = 1:size(ERP_all(s).mERP,3) % Loop over all epochs pers subject
+        
+        % ident vars
+        ERP(c).ID       = ERP_all(s).ID;
+        ERP(c).group    = LLTgroupname(ERP_all(s).ID);
+        
+        % epoch vars
+        clear ep_stim % delete from previous iteration
+        ep_stim             = splitLLTstim(ERP_all(s).pics(e)); % Get all stim infos per participant
+        [ERP(c).extremity ERP(c).condition ERP(c).angle]  = LLTepochinfo(ep_stim);
+        ERP(c).response     = ERP_all(s).idx_cor(e);
+        
+        % check for artifact
+        idx_time_bl_start   = dsearchn(cfg.ep_time',cfg.ERP.BL(1));
+        idx_ep_end          = dsearchn(cfg.ep_time',1500);
+        if idx_ep_end == 1;idx_ep_end = dsearchn(cfg.ep_time',cfg.ep_time(end));end
+        ERP(c).artefact = max(squeeze(max(ERP_all(s).mERP(idx_ROI,idx_time_bl_start:idx_ep_end,e),[],2))>100 | squeeze(min(ERP_all(s).mERP(idx_ROI,idx_time_bl_start:idx_ep_end,e),[],2))<-100);
+        
+        ERP(c).P2 = squeeze(nanmean(nanmean(ERP_all(s).mERP(idx_ROI,idx_time_P2,e))))';
+        ERP(c).P3 = squeeze(nanmean(nanmean(ERP_all(s).mERP(idx_ROI,idx_time_P3,e))))';
+
+        c = c+1;
+    end
+    
+end
+        
+ERP = struct2table(ERP);
+writetable(ERP,[PATHOUT_data 'ERPs.csv']);
 
 % hand
 clear nms_all_grp

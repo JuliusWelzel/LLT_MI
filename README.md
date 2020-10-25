@@ -18,6 +18,7 @@ Supervised by Catharina Zich & Cornelia Kranczioch, University of Oldenburg <br>
   * 02_cleanEEG *(clean by IClabel)*
   * 03_RTs *(Reaction per trial based on speech onset)*
   * 04_ERPs *(Event-related potentials)*
+    - contains ERP data of all trials *ERP.csv*
 * 03_scripts *(data analysis script projecting 02_data)*
 * 04_plots *(plots derived from 03_scripts)*
 * 99_software *(toolboxes and additional functions)*
