@@ -13,12 +13,12 @@
 PATHIN_ERP  = [MAIN '02_data\04_ERPs\'];
 PATHIN_RTs  = [MAIN '02_data\03_RTs\'];
 
-PATHOUT_plots = [MAIN '04_plots\04_ERPs\'];
+PATHOUT_plots   = [MAIN '04_plots\04_ERPs\'];
+PATHOUT_data    = [MAIN '02_data\04_ERPs\JASP\'];
 
 %Check if PATHOUT-folder is already there; if not: create
-if ~isdir(PATHOUT_plots)
-    mkdir(PATHOUT_plots);
-end
+if ~isdir(PATHOUT_plots);mkdir(PATHOUT_plots);end
+if ~isdir(PATHOUT_data);mkdir(PATHOUT_data);end
 
 %% Gather all available data with clean EEG & RTs
 % load RTs
@@ -45,7 +45,7 @@ nms_group   = {'stroke','old','young'};
 
 %% Explore ERP dist
 %add relevant indices
-idx_time_P3 = dsearchn(cfg.ep_time',[450]'):dsearchn(cfg.ep_time',[600]');
+idx_time_P3 = dsearchn(cfg.ep_time',[300]'):dsearchn(cfg.ep_time',[600]');
 idx_ROI = ismember({cfg.ERP.chanlocs.labels},{'P3','Pz','P4'});
 
 
@@ -87,8 +87,12 @@ for s = 1:length(ERP_all)
     ERP_all(s).idx_id_300    = contains(ep_stim(3,:),'300')';
 
 
-    % group assignment, only consider artifact free epochs
-    ERP_all(s).group = ones(1,size(ep_stim,2))*idx_group(s);
+    % group assignment, only consider artifact free epochs and ID
+    ERP_all(s).group        = ones(1,size(ep_stim,2))*idx_group(s);
+    dat_trial_hERP(s).ID    = cell(1,sum(idx_cor & ERP_all(s).idx_hand));    
+    dat_trial_hERP(s).ID(:) = {ERP_all(s).ID};
+    dat_trial_fERP(s).ID    = cell(1,sum(idx_cor & ERP_all(s).idx_foot));    
+    dat_trial_fERP(s).ID(:) = {ERP_all(s).ID};
 
     %single trial vs single sub
     dat_trial_hERP(s).P3 = squeeze(nanmean(nanmean(ERP_all(s).mERP(idx_ROI,idx_time_P3,idx_cor' & ERP_all(s).idx_hand'))))';
@@ -190,22 +194,6 @@ plot(cfg.ep_time,mean(dat_trial_hERP_s120(idx_stroke,:)),'Color',color.c_rh)
 sgtitle (['Hand ERP [450-600 ms] at P3,Pz,P4'])
 save_fig(gcf,PATHOUT_plots,'grp_hERPs_ANOVA')
 
-%% Prep data for JASP
-% ANOVA  mean (group [3] x con)
-
-% Hand
-dat_amp_hand_P3 = [dat_trial_hERP.P3];
-
-idx_all_stroke = [dat_trial_hERP.group] == 0;
-idx_all_old = [dat_trial_hERP.group] == 1;
-idx_all_young = [dat_trial_hERP.group] == 2;
-nms_all_grp(idx_all_stroke)     = string('stroke');
-nms_all_grp(idx_all_old)        = string('old');
-nms_all_grp(idx_all_young)      = string('young');
-
-nms_all_con = [dat_trial_hERP.condn];
-nms_all_ang = [dat_trial_hERP.angle];
-
 
 %% Feet ERPs
 
@@ -264,10 +252,12 @@ plot(cfg.ep_time,mean(dat_trial_fERP_s120(idx_stroke,:)),'Color',color.c_rh)
 sgtitle (['Feet ERP [450-600 ms] at P3,Pz,P4'])
 save_fig(gcf,PATHOUT_plots,'grp_fERPs_ANOVA')
 
-%% Prep data for JASP
-% ANOVA mean ERP
 
-% Feet
+%% Prep data for JASP
+% ANOVA  mean (group [3] x con)
+
+
+% hand
 clear nms_all_grp
 clear nms_all_con
 clear nms_all_ang
