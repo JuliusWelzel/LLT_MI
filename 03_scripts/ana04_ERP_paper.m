@@ -289,55 +289,14 @@ end
 ERP = struct2table(ERP);
 writetable(ERP,[PATHOUT_data 'ERPs.csv']);
 
-% hand
-clear nms_all_grp
-clear nms_all_con
-clear nms_all_ang
+ERPcon   = unstack(ERP,{'P2','P3'},'condition','AggregationFunction',@mean);
+ERPang   = unstack(ERP,{'P2','P3'},'angle','AggregationFunction',@mean);
+ERPext   = unstack(ERP,{'P2','P3'},'extremity','AggregationFunction',@mean);
 
-dat_amp_feet_P3 = [dat_trial_fERP.P3];
+writetable(ERPcon,[PATHOUT_data 'ERP_condition.csv']);
+writetable(ERPang,[PATHOUT_data 'ERP_angle.csv']);
+writetable(ERPext,[PATHOUT_data 'ERP_extremity.csv']);
 
-clear nms_all_grp
-idx_all_stroke  = [dat_trial_hERP.group] == 0;
-idx_all_old     = [dat_trial_hERP.group] == 1;
-idx_all_young   = [dat_trial_hERP.group] == 2;
-nms_all_grp(idx_all_stroke)     = string('stroke');
-nms_all_grp(idx_all_old)        = string('old');
-nms_all_grp(idx_all_young)      = string('young');
-
-nms_all_con = [dat_trial_hERP.condn];
-nms_all_ang = [dat_trial_hERP.angle];
-nms_all_id  = [dat_trial_hERP.ID];
-
-tab_hand    = table(dat_amp_hand_P3',nms_all_id',nms_all_grp',nms_all_con',nms_all_ang','VariableNames',{'P3','ID','Group','Condition','Angle'});
-tab_hand_con   = unstack(tab_hand,'P3','Condition','AggregationFunction',@mean)
-writetable(tab_hand_con,[PATHOUT_data 'hERP_P3_condition.csv']);
-
-tab_hand    = table(dat_amp_hand_P3',nms_all_id',nms_all_grp',nms_all_con',nms_all_ang','VariableNames',{'P3','ID','Group','Condition','Angle'});
-tab_hand_ang   = unstack(tab_hand,'P3','Angle','AggregationFunction',@mean)
-writetable(tab_hand_ang,[PATHOUT_data 'hERP_P3_angle.csv']);
-
-% Foot
-dat_amp_foot_P3 = [dat_trial_fERP.P3];
-
-clear nms_all_grp
-idx_all_stroke  = [dat_trial_fERP.group] == 0;
-idx_all_old     = [dat_trial_fERP.group] == 1;
-idx_all_young   = [dat_trial_fERP.group] == 2;
-nms_all_grp(idx_all_stroke)     = string('stroke');
-nms_all_grp(idx_all_old)        = string('old');
-nms_all_grp(idx_all_young)      = string('young');
-
-nms_all_con = [dat_trial_fERP.condn];
-nms_all_ang = [dat_trial_fERP.angle];
-nms_all_id  = [dat_trial_fERP.ID];
-
-tab_foot    = table(dat_amp_foot_P3',nms_all_id',nms_all_grp',nms_all_con',nms_all_ang','VariableNames',{'P3','ID','Group','Condition','Angle'});
-tab_foot_con   = unstack(tab_foot,'P3','Condition','AggregationFunction',@mean)
-writetable(tab_foot_con,[PATHOUT_data 'fERP_P3_condition.csv']);
-
-tab_foot    = table(dat_amp_foot_P3',nms_all_id',nms_all_grp',nms_all_con',nms_all_ang','VariableNames',{'P3','ID','Group','Condition','Angle'});
-tab_foot_ang   = unstack(tab_foot,'P3','Angle','AggregationFunction',@mean)
-writetable(tab_foot_ang,[PATHOUT_data 'fERP_P3_angle.csv']);
 
 
 %% Plot number of trials which are rejected
