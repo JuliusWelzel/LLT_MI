@@ -11,10 +11,10 @@
 
 
 PATHIN_RTs  = [MAIN '02_data\03_RTs\'];
-PATHIN_WVLT = [MAIN '02_data\04_wavelets\'];
+PATHIN_WVLT = [MAIN '02_data\05_wvlts\'];
 
-PATHOUT_ERD = [MAIN '02_data\06_ERD_old_young\'];
-PATHOUT_plots = [MAIN '02_data\06_ERD_old_young\plots\'];
+PATHOUT_ERD = [MAIN '02_data\05_ERD\'];
+PATHOUT_plots = [MAIN '04_plots\05_ERD\'];
 
 %Check if PATHOUT-folder is already there; if not: create
 if ~isdir(PATHOUT_ERD)
@@ -52,6 +52,15 @@ groups(3).idx = idx_young;
 %       stimuli in younger participants and extend it to older participants] ...
 
 load([PATHIN_WVLT 'cfg.mat'])
+% assign necessary parameters for following analysis in EEGLAB *yay*
+cfg_el.ep_length   = [-1 3];
+cfg_el.ep_prune    = 3; % pruning parameters for rejection
+cfg_el.freqs       = [1:40]; % freqs OI
+cfg_el.srate       = 500; 
+cfg_el.times       = cfg_el.ep_length(1)*1000:1000/cfg_el.srate:cfg_el.ep_length(2)*1000-1; % time vec for epoch
+cfg_el.cycles      = [5 8]; %cycle range from 5 to 8, Debener ea., 2005
+cfg_el.bl          = [-500 -200];
+cfg_el.bl_erp      = [-600 -400];
 
 % get time epcoh data and indices for time period
 ep_time         = cfg_el.times;
