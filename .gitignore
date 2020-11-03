@@ -1,11 +1,2 @@
 
-/02_data/00_raw/*
-/02_data/01_ICAw/*
-/02_data/02_cleanEEG/*
-/02_data/03_RTs/find_RT_SO/*
-/02_data/04_ERPs/*
-/99_software/unfold/*
-
-*.set
-*.fdt
-*wvlts*.mat
+/02_data/*

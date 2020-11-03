@@ -3,13 +3,13 @@
 % backproject them on rawdata
 
 
-PATHIN_eeg = [MAIN '02_data\00_raw\'];
-PATHIN_ica = [MAIN '02_data\01_ICAw\'];
-PATHOUT_eeg = [MAIN '02_data\02_cleanEEG\'];
+PATHIN_reeg = [MAIN '02_data\00_raw\'];
+PATHIN_icaw = [MAIN '02_data\01_ICAw\'];
+PATHOUT_ceeg = [MAIN '02_data\02_cleanEEG\'];
 
 %Check if PATHOUT-folder is already there; if not: create
-if ~isdir(PATHOUT_eeg)
-    mkdir(PATHOUT_eeg);
+if ~isdir(PATHOUT_ceeg)
+    mkdir(PATHOUT_ceeg);
 end
 
 % set possible bad ICs
@@ -24,18 +24,17 @@ end
 iclab_cfg = {[3:4]};
 iclab_nms = {'finICA'};
 
-% document potential problems with a subject
-docError = {};      
-if exist([PATHIN_ica,'cfg.mat'],'file') == 2;load([PATHIN_ica,'cfg.mat']),end;
-
+% load cfg file
+load([PATHIN_icaw,'cfg.mat'])
+cfg.ICA.iclabe_rej = iclab_cfg;
 %% Gather all available datasets
-list = dir(fullfile([PATHIN_ica '*Ica*.set']));
+list = dir(fullfile([PATHIN_icaw '*Ica*.set']));
 SUBJ = extractBefore({list.name},'_');
 
 %% Automatically reject ICs (EegLAB, ICLabel)
 
 for sub = 1:length(SUBJ)
-    if exist([PATHOUT_eeg,SUBJ{sub},'_',iclab_nms{1}, '_clean.set'],'file') == 2
+    if exist([PATHOUT_ceeg,SUBJ{sub},'_',iclab_nms{1}, '_clean.set'],'file') == 2
         disp(['ICA for ' SUBJ{sub} ' has already been cleaned. Continue with next dataset.']);
         pause(0.2);
     else
@@ -43,7 +42,7 @@ for sub = 1:length(SUBJ)
     for ii = 1
         
     % load dataset with ICA weights
-    EEG         = pop_loadset('filename',[SUBJ{sub} '_ICAw.set'],'filepath',PATHIN_ica);
+    EEG         = pop_loadset('filename',[SUBJ{sub} '_ICAw.set'],'filepath',PATHIN_icaw);
     EEG         = eeg_checkset(EEG,'ica' );
     EEG.icaact  = eeg_getica(EEG);
     
@@ -64,7 +63,7 @@ for sub = 1:length(SUBJ)
     TMP.etc             = EEG.etc;
     
     %% Load "original" data set
-    EEG = pop_loadxdf([PATHIN_eeg 'LLT_' SUBJ{sub} '.xdf'], 'streamtype', 'EEG', 'exclude_markerstreams', {});
+    EEG = pop_loadxdf([PATHIN_reeg 'LLT_' SUBJ{sub} '.xdf'], 'streamtype', 'EEG', 'exclude_markerstreams', {});
 
     %add chanlocs
     EEG = pop_chanedit(EEG, 'lookup',[MAIN '99_software\mobile24_proper_labels.elp']);    
@@ -80,16 +79,15 @@ for sub = 1:length(SUBJ)
     %% delete bad components
     EEG = pop_subcomp(EEG, [EEG.badcomps], 0);
     EEG = eeg_checkset(EEG);
-    EEG = pop_saveset( EEG, 'filename',[SUBJ{sub} '_' iclab_nms{ii} '_clean.set'],'filepath',PATHOUT_eeg);    
+    EEG = pop_saveset( EEG, 'filename',[SUBJ{sub} '_' iclab_nms{ii} '_clean.set'],'filepath',PATHOUT_ceeg);    
    
     end
    catch % write in Error doc
         disp(['Error with ' SUBJ{sub}])
-        docError(end+1) = SUBJ(sub);
         close
         continue;
     end
     end
 end
 
-save([PATHOUT_eeg 'docError'], 'docError');
+save([PATHOUT_ceeg 'cfg'], 'cfg');

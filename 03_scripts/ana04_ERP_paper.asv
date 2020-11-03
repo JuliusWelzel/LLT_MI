@@ -43,7 +43,7 @@ idx_group(idx_young)    = 2;
 % groups vars for plotting
 nms_group   = {'stroke','old','young'};
 
-%% PLOT ERPs in various conditions
+%% Explore ERP dist
 %add relevant indices
 idx_time_P2 = dsearchn(cfg.ERP.time_vec',[180]'):dsearchn(cfg.ERP.time_vec',[260]');
 idx_time_P3 = dsearchn(cfg.ERP.time_vec',[300]'):dsearchn(cfg.ERP.time_vec',[600]');
@@ -254,7 +254,7 @@ sgtitle (['Feet ERP [300-600 ms] at P3,Pz,P4'])
 save_fig(gcf,PATHOUT_plots,'grp_fERPs_ANOVA')
 
 
-%% Prep data for JASP long table format
+%% Prep data for JASP
 
 c = 1;
 for s = 1:numel(ERP_all) % Loop over all subjects
@@ -285,6 +285,24 @@ end
         
 ERP = struct2table(ERP);
 writetable(ERP,[PATHOUT_data 'mERPs.csv']);
+
+
+%% Plot number of trials which are rejected
+
+for s = 1:size(ERP_all,2)
+    var_trl_art(s) = mean(sum(ERP_all(s).idx_art(idx_ROI,:)) > 0) * 100;
+end
+
+
+dat_art_bp = {var_trl_art(idx_stroke),var_trl_art(idx_old),var_trl_art(idx_young)};
+close all
+singleBoxplot(dat_art_bp)
+tune_BP([color.c_stroke;color.c_old;color.c_young])
+    xticks ([1 2 3])
+    xticklabels (nms_group)
+    ylabel 'Number of artifactual epochs [%]'
+
+save_fig(gcf,PATHOUT_plots,'grp_art_eps')
 
 %%
 save ([PATHIN_ERP 'cfg.mat'],'cfg');

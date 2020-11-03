@@ -24,19 +24,15 @@ cfg.ICA.HP = 1;
 cfg.ICA.PRUNE = 3;
 cfg.ICA.resam = 250;
 
-% document potential problems with a subject
-docError = {};      
-
 %% Gather all available datasets
 % datasets are storde as LLT_SUBJXX.xdf
 list = dir(fullfile([PATHIN '*LLT*SUBJ*.xdf']));
 SUBJ = extractBetween({list.name},'_','.');
 
-
 %% loop over datasets
 
 
-for sub = 1:length(SUBJ)
+for sub = 2%1:length(SUBJ)
     
     try % write in doc_error when failing
     
@@ -76,13 +72,11 @@ for sub = 1:length(SUBJ)
     E_pic_all = strfind(trig,'E');
     
     % check for number of trials trianing & experiment
-    if sum([E_pic_all{:}]) == (96) % check if number of experimental triggers is okay
+    if sum([E_pic_all{:}]) == (96) | sum([E_pic_all{:}]) == (192) % check if number of experimental triggers is okay
         num_blocks(1).type = 'T';
         num_blocks(1).n_trig = sum([T_pic_all{:}]);
         num_blocks(2).type = 'E';
         num_blocks(2).n_trig = sum([E_pic_all{:}]);
-    else
-        docError(end+1) = {'Numbers of triggers not correct'}
     end
     EEG.num_blocks = num_blocks;
     
@@ -130,13 +124,6 @@ for sub = 1:length(SUBJ)
         num_blocks_del = num_blocks_del +1;
     end
 
-    %save sec of deleted data & number of LLT blocks for further analysis
-    SUBJinfo(sub).numsec_del = num2str(round((length(oEEG.data)-length(EEG.data))/EEG.srate));
-    SUBJinfo(sub).num_LLT_bl = num2str(num_blocks_del-2);
-    SUBJinfo(sub).num_pics = size(type_pic,2);
-    SUBJinfo(sub).num_trig = length(EEG.event);
-
- 
     %% ICA
     run_ICA = 1;
     
@@ -166,9 +153,8 @@ for sub = 1:length(SUBJ)
     end %if run ICA
     
     end %if subj ICAw
-    catch % write in Error doc
+    catch 
         disp(['Error with ' SUBJ{sub}])
-        docError(end+1) = SUBJ(sub);
         close
         continue;
 
@@ -185,7 +171,4 @@ for sub = 1:length(SUBJ)
     
 end
 
-save([PATHOUT 'docError'], 'docError');
 save([PATHOUT 'cfg'], 'cfg');
-
-

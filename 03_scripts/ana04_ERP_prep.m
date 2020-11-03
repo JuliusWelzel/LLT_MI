@@ -13,6 +13,7 @@ if ~isdir(PATHOUT_ERP)
 end
 
 %creating variables for ICA
+load([PATHIN_eeg 'cfg.mat']);
 cfg.ERP.LP = 20;
 cfg.ERP.HP = 1;
 cfg.ERP.PRUNE = 3;
@@ -46,9 +47,8 @@ for sub = 1:length(SUBJ)
 
         %re-ref the data
         EEG = pop_reref(EEG,{'TP9','TP10'});
-        EEG = pop_interp(EEG,EEG.chanlocs, 'spherical');
 
-
+        % find experimental picture marker
         e_type = {EEG.event.type};
         e_idx = contains({EEG.event.type},'E_');
         ep_e = e_type(e_idx);
@@ -74,15 +74,16 @@ for sub = 1:length(SUBJ)
         EEG = pop_saveset( EEG, 'filename',[SUBJ{sub} '_ep_filt.set'],'filepath',PATHOUT_ERP);    
         
         % store part mean ERP
-        ERP_all(sub).ID = EEG.ID;
-        ERP_all(sub).pics = ep_e;
-        ERP_all(sub).mERP = EEG.data;
+        ERP_all(sub).ID             = EEG.ID;
+        ERP_all(sub).stimulus_pic   = ep_e;
+        ERP_all(sub).ERP            = EEG.data;
         
         %store ep info
-        ERP_all(sub).idx_prune  = EEG.idx_ep_prune;
-        ERP_all(sub).idx_art    = EEG.idx_art;
-        ERP_all(sub).idx_cor    = EEG.idx_cor;
-        ERP_all(sub).RT_SO_s    = EEG.SO_ms;
+        ERP_all(sub).idx_prune  = EEG.idx_ep_prune; % artifact marked from pruning
+        ERP_all(sub).idx_art    = EEG.idx_art; % artifact marker +- 100 mV
+        ERP_all(sub).idx_cor    = EEG.idx_cor; % correct answer given
+        ERP_all(sub).RT_SO_s    = EEG.SO_ms; % speech onset as reaction time
+        
 
 end % SUB LOOP
 
