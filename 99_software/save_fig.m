@@ -41,7 +41,7 @@ figtype = p.Results.figtype;
 set(findall(0,'type','axes'),'FontSize',font_s) % set font size of axis
 set(F, 'Units','centimeters','Position',fig_s); % set figure size in cm
 set(F,'color','white'); % set figure background color in rgb mode
-print(F,[PATHOUT NAME figtype],'-dpng','-r600'); % save figure 
+print(F,[PATHOUT NAME figtype],'-dpng'); % save figure 
 close;
 
 

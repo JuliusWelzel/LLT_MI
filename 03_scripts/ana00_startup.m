@@ -15,10 +15,10 @@ addpath(genpath(MAIN));
 
 
 % add toolboxes to path 
-path_toolboxes = 'D:\projects\toolboxes\';
-addpath([path_toolboxes 'eeglab2019_0']);
+path_toolboxes = 'C:\Users\juliu\Documents\MATLAB\toolboxes\';
+addpath([path_toolboxes 'eeglab2019_1']);
 eeglab;close all;
-addpath([path_toolboxes 'fieldtrip-20191111']);
+addpath([path_toolboxes 'fieldtrip-20201023']);
 
 %Change MatLab defaults
 set(0,'defaultfigurecolor',[1 1 1]);
