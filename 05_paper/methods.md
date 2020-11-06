@@ -25,10 +25,9 @@ Experimental setup & task information
 ### Preprocessing parameters
 - Sensor removal - None
 - Artifact removal - ICA using IC Label, reject components which are labeled heart & eye ([ref. ana01_raw2ICA2](../03_scripts/README_analysisplan.md))
-- Physiological artifact removal
-- Downsampling
-- Filtering
-- Segmentation
-- Baseline correction
-- Re-referencing
-- Spectral transformation
+- Downsampling - 100 Hz for ERPs and 250 Hz for wavelets
+- Filtering - 1-20 Hz ERPs and HP 1 Hz for wavelets
+- Segmentation - -1 to 3 seconds for ERPs and -1.5 to 7 seconds for wavelets
+- Baseline correction - -500 to -100 ms for ERPs and -500 to -200 ms for wavelets
+- Re-referencing - TP 9 & 10 for ERPs and CAR for wavelets
+- Spectral transformation - Morlet wavelets at 5-8 cyles at 1-35 Hz in steps of 1 Hz

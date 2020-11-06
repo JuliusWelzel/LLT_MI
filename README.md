@@ -20,10 +20,10 @@ Supervised by Catharina Zich & Cornelia Kranczioch, University of Oldenburg, (co
     - ERPall.mat *summarized ERP data with indices per condition*
     - JASP *overview tables for ANOVA*
   * 05_wvlts *Single subject, single trial wavlets [1-40 Hz]*
-  * 05_ERD *ERD overview per condition*
 * 03_scripts *(data analysis script projecting to 02_data)*
 * 04_plots *(plots derived from 03_scripts)*
+* 05_paper *(methods.md is a markdown file with an overview of all steps)*
 * 99_software *(toolboxes and additional functions)*
 
 ## Versioning
-*Version 3.0// 30.10.2020*
+*Version 3.1// 06.11.2020*

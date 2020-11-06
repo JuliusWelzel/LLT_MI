@@ -24,8 +24,6 @@ cfg.wvlt.times       = cfg.wvlt.ep_length(1)*1000:1000/cfg.wvlt.srate:cfg.wvlt.e
 cfg.wvlt.cycles      = [5 8]; %cycle range from 5 to 8, Debener ea., 2005
 cfg.wvlt.bl_wvlt     = [-500 -200];
 cfg.wvlt.bl_erp      = [-600 -400];
-cfg.wvlt.postBETAt   = [0 1000];
-
 
 % create idices for analysis
 idx_bl      = dsearchn(cfg.wvlt.times',cfg.wvlt.bl_wvlt');
