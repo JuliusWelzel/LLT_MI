@@ -23,7 +23,7 @@ ___
 8. Identify correct answers
 9. Transfer information to ERP_all (ID,stimulus_pic,ERP[n_channel x samples x n_trials], idx_prune, idx_art, idx_cor, RT_SO_ms])
 ___
-**ana04_ERP_paper**
+**ana04_ERP_paper** <br>
 0. definition P200 [180-260 s] & P300 [300-600 ms]
 1. Plot ERPs
   - Grand average
