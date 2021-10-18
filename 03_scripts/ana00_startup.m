@@ -23,7 +23,7 @@ addpath([path_toolboxes 'fieldtrip-20201023']);
 %Change MatLab defaults
 set(0,'defaultfigurecolor',[1 1 1]);
 
-color.c_rh = [39,93,59]/255;
+color.c_rh = [39,93,59]/255; 
 color.c_lh = [117,196,107]/255;
 color.c_rf = color.c_rh * 1.5;
 color.c_lf = color.c_lh * 1.3;

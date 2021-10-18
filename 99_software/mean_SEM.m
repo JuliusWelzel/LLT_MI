@@ -6,9 +6,9 @@ mean_data = [];
 sem_data = [];
 
 for r = 1:size(data,1)
-    mean_data(r) = mean(data(r,:));
+    mean_data(r) = mean(data{r});
 
-    sem_data(r) = std(data(r,:))/sqrt(length(data(r,:)));
+    sem_data(r) = std(data{r})/sqrt(length(data{r}));
 end
 
 end

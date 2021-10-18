@@ -16,8 +16,8 @@ load 'RT_all.mat'
 
 [ all.sixty all.onet all.twofor all.three ] = getRT_con( RT_ALL, [0 60 300]);
 
-%% PLOTS for all in depth rotation
-
+%% Scatter plots for all in depth rotation
+%{
 sub_c = 1:4;
 sub_r = 1:3;
 sub_all_c = [4,4,4,4];
@@ -195,11 +195,11 @@ xticks([1:4])
 xticklabels({'60°','120°','240°','300°'})
 % legend ('Left Hand','Right Hand')
 title 'Young 300°'
-
+%}
 %% Set general figure option
 
 % All stimuli
-%{
+
 % 0,60,300 degree Average plot for both groups
 subplot(max(sub_r),max(sub_all_c),[sub_all_c(1):sub_all_c(2),sub_all_c(1)+max(sub_all_c):sub_all_c(2)+max(sub_all_c),sub_all_c(1)+2*max(sub_all_c):sub_all_c(2)+2*max(sub_all_c)])
 [me_lh_o sem_lh_o] = mean_SEM({all.sixty.lh_o;all.onet.lh_o;all.twofor.lh_o;all.three.lh_o});
@@ -234,9 +234,9 @@ legend ('Left Hand','Right Hand')
 title 'Young all°'
 %}
 
-% 0 degree
-%{
-%% Extract 0 degree roation horizontally
+
+
+% Extract 0 degree roation horizontally
 
 c = 1;
 
@@ -409,11 +409,11 @@ xticklabels({'60°','120°','240°','300°'})
 legend ('Old','Young')
 
 
-%}
 
-% 60 degree
-%{
-%% Extract 60 degree roation horizontally
+
+
+
+% Extract 60 degree roation horizontally
 
 c = 1;
 
@@ -579,11 +579,8 @@ xticks([1:4])
 xticklabels({'60°','120°','240°','300°'})
 legend ('Old','Young')
 
-%}
 
-% 300 degree
-%{
-%% Extract 300 degree roation horizontally
+% Extract 300 degree roation horizontally
 
 c = 1;
 
@@ -605,7 +602,7 @@ end
 
 
 
-%% Sort RTs by degree
+% Sort RTs by degree
 sixty_lh_o = {};
 sixty_lh_y = {};
 sixty_rh_o = {};
@@ -749,10 +746,7 @@ xticks([1:4])
 xticklabels({'60°','120°','240°','300°'})
 legend ('Old','Young')
 
-%}
 
-% All stimuli
-%{
 %% Extract 0,60 & 300 degree roation horizontally
 
 c = 1;
@@ -760,7 +754,7 @@ c = 1;
 for sub = 1:length(RT_ALL)
     for st = 10:length(RT_ALL(sub).stim)
             RT_DS_all(c).deg = str2num(RT_ALL(sub).stim{st,4}); %get the degree of rotation
-            RT_DS_all(c).ID = str2num(RT_ALL(sub).ID{1}(5:6)); %get the Subject ID
+            RT_DS_all(c).ID = str2num(RT_ALL(sub).ID(5:6)); %get the Subject ID
             RT_DS_all(c).limb = RT_ALL(sub).stim{st,1}; %get limb
             RT_DS_all(c).mod = RT_ALL(sub).con_ind(st); %get the degree of lateralt = 1 /medial = 2
             RT_DS_all(c).RT = RT_ALL(sub).SO_ms(st); %get RT 
@@ -772,7 +766,7 @@ for sub = 1:length(RT_ALL)
 end
 
 
-%% Sort RTs by degree
+% Sort RTs by degree
 sixty_lh_o_all = {};
 sixty_lh_y_all = {};
 sixty_rh_o_all = {};
