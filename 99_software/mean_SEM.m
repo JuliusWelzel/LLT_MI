@@ -5,10 +5,14 @@ function [ mean_data sem_data ] = mean_SEM( data )
 mean_data = [];
 sem_data = [];
 
-for r = 1:size(data,1)
-    mean_data(r) = mean(data{r});
+if ~iscell(data)
+    data = num2cell(data);
+end
 
-    sem_data(r) = std(data{r})/sqrt(length(data{r}));
+for r = 1:size(data,1)
+    mean_data(r) = mean(data{r},'omitnan');
+
+    sem_data(r) = std(data{r},'omitnan')/sqrt(length(data{r}));
 end
 
 end

@@ -2,7 +2,7 @@
 
 clc;clear all;close all;
 
-MAIN = ['G:\nic_LLT_all\ana03_objectbased\ana03_RTs\ana02_RT_final\'];
+% MAIN = ['G:\nic_LLT_all\ana03_objectbased\ana03_RTs\ana02_RT_final\'];
 addpath(genpath('G:\nic_LLT_all\'));
 addpath(genpath(MAIN));
 
@@ -161,17 +161,17 @@ title 'Young all°'
 
 
 
-% 0 degree
-%{
+
+
 %% Extract 0 degree roation horizontally
 
 c = 1;
 
 for sub = 1:length(RT_ALL)
-    for st = 10:length(RT_ALL(sub).stim)
+    for st = 10:length(RT_ALL(sub).stim) % discard training stimuli
         if strcmp(RT_ALL(sub).stim{st,3},'0')  % only take 0 degreee horizontally
             RT_DS(c).deg = str2num(RT_ALL(sub).stim{st,4}); %get the degree of rotation
-            RT_DS(c).ID = str2num(RT_ALL(sub).ID{1}(5:6)); %get the Subject ID
+            RT_DS(c).ID = str2num(RT_ALL(sub).ID(5:6)); %get the Subject ID
             RT_DS(c).limb = RT_ALL(sub).stim{st,1}; %get limb
             RT_DS(c).mod = RT_ALL(sub).con_ind(st); %get the degree of lateralt = 1 /medial = 2
             RT_DS(c).RT = RT_ALL(sub).SO_ms(st); %get RT 
@@ -316,16 +316,15 @@ title 'Young'
 
 %% average plot for group
 
-old_hand = [sixty_lh_o sixty_rh_o;onet_lh_o onet_rh_o;twofor_lh_o twofor_rh_o;three_lh_o three_rh_o];
-young_hand = [sixty_lh_y sixty_rh_y;onet_lh_y onet_rh_y;twofor_lh_y twofor_rh_y;three_lh_y three_rh_y];
+% Plot RTs 
 
-[m_o_h sem_o_h] = mean_SEM(old_hand);
-[m_y_h sem_y_h] = mean_SEM(young_hand);
-
-figure
-errorbar(m_o_h, sem_o_h,'-or','color','r')
+figure;
+subplot(1,2,1)
+[me_lh_o sem_lh_o] = mean_SEM({sixty_lh_o;onet_lh_o;twofor_lh_o;three_lh_o});
+errorbar(me_lh_o, sem_lh_o,'-or','color','r')
 hold on;
-errorbar(m_y_h, sem_y_h,'-ob','color','b')
+[me_rh_o sem_rh_o] = mean_SEM({sixty_rh_o;onet_rh_o;twofor_rh_o;three_rh_o});
+errorbar(me_rh_o, sem_rh_o,'-og','color','g')
 
 xlim([0 5])
 xlabel 'Degree in rotation'
@@ -333,7 +332,24 @@ ylim([1000 2000])
 ylabel 'RT[ms]'
 xticks([1:4])
 xticklabels({'60°','120°','240°','300°'})
-legend ('Old','Young')
+legend ('Left Hand','Right Hand')
+title 'Old'
+
+subplot(1,2,2)
+[me_lh_y sem_lh_y] = mean_SEM({sixty_lh_y;onet_lh_y;twofor_lh_y;three_lh_y});
+errorbar(me_lh_y, sem_lh_y,'-om','color','m')
+hold on;
+[me_rh_y sem_rh_y] = mean_SEM({sixty_rh_y;onet_rh_y;twofor_rh_y;three_rh_y});
+errorbar(me_rh_y, sem_rh_y,'-ok','color','k')
+
+xlim([0 5])
+xlabel 'Degree in rotation'
+ylim([1000 2000])
+ylabel 'RT[ms]'
+xticks([1:4])
+xticklabels({'60°','120°','240°','300°'})
+legend ('Left Hand','Right Hand')
+title 'Young'
 
 
 %}

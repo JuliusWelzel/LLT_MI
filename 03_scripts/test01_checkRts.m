@@ -40,7 +40,7 @@ for s = 1:numel(RT_ALL)
     rt_sort(1,3,s)  = mean(RT_ALL(s).SO_ms(RT_ALL(s).acc == 1 & strcmp({RT_ALL(s).stim{:,1}},'lh') & strcmp({RT_ALL(s).stim{:,4}},'240')),'omitnan'); 
     rt_sort(1,4,s)  = mean(RT_ALL(s).SO_ms(RT_ALL(s).acc == 1 & strcmp({RT_ALL(s).stim{:,1}},'lh') & strcmp({RT_ALL(s).stim{:,4}},'300')),'omitnan'); 
 
-    % left hand(second row) all lateral rotations
+    % rigth hand(second row) all lateral rotations
     rt_sort(2,1,s)  = mean(RT_ALL(s).SO_ms(RT_ALL(s).acc == 1 & strcmp({RT_ALL(s).stim{:,1}},'rh') & strcmp({RT_ALL(s).stim{:,4}},'60')),'omitnan'); 
     rt_sort(2,2,s)  = mean(RT_ALL(s).SO_ms(RT_ALL(s).acc == 1 & strcmp({RT_ALL(s).stim{:,1}},'rh') & strcmp({RT_ALL(s).stim{:,4}},'120')),'omitnan'); 
     rt_sort(2,3,s)  = mean(RT_ALL(s).SO_ms(RT_ALL(s).acc == 1 & strcmp({RT_ALL(s).stim{:,1}},'rh') & strcmp({RT_ALL(s).stim{:,4}},'240')),'omitnan'); 
