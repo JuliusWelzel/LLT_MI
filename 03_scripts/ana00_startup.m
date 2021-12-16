@@ -10,7 +10,7 @@
 
 clc; clear all; close all;
 
-MAIN = [fileparts(pwd) '\'];
+MAIN = fullfile(fileparts(pwd));
 addpath(genpath(MAIN));
 
 

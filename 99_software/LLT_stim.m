@@ -17,10 +17,10 @@ function [EEG] = LLT_stim( EEG )
 %%  find all presentation markers which are NOT pictures and store them
 
 all_trig = {EEG.event(:).type};
-not_pic = ismember(all_trig,{'1','2','3','empty'}); %all triggers which are not a pic
+not_pic = ismember(all_trig,{'1','2','3','4','empty'}); %all triggers which are not a pic
 lat_pic = [EEG.event(~not_pic).latency]; % latency of pictures
 type_pic = {EEG.event(~not_pic).type}; %type of stimulus
-pic_i = find(~ismember(all_trig,{'1','2','3','empty'}));
+pic_i = find(~ismember(all_trig,{'1','2','3','4','empty'}));
 pic_trig = all_trig(~not_pic);
 
 for ind = 1:length(pic_i)
